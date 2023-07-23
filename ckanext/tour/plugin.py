@@ -33,7 +33,8 @@ class TourPlugin(plugins.SingletonPlugin):
                 configs=[
                     ConfigurationItem(
                         name="Global settings",
-                        blueprint="tour.list",
+                        blueprint="tour.config",
+                        info="Global configuration for a tour"
                     ),
                     ConfigurationItem(
                         name="Manage tours",
@@ -42,7 +43,7 @@ class TourPlugin(plugins.SingletonPlugin):
                     ),
                     ConfigurationItem(
                         name="Add tour",
-                        blueprint="user.index",
+                        blueprint="tour.add",
                         info="Add new tour",
                     ),
                 ],

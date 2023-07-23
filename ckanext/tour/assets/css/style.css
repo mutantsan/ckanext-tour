@@ -1,1 +1,29 @@
+.tour-steps {
+  margin-bottom: 16px;
+}
+.tour-steps .tour-steps__steps {
+  margin-bottom: 16px;
+}
+.tour-steps .tour-steps__steps .tour-step {
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 8px;
+  position: relative;
+}
+.tour-steps .tour-steps__steps .tour-step .form-group {
+  margin-bottom: 16px;
+}
+.tour-steps .tour-steps__steps .tour-step .image-upload .form-group {
+  margin-bottom: 0;
+}
+.tour-steps .tour-steps__steps .tour-step .remove-step {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.tour-steps .tour-steps__steps .tour-step:last-of-type {
+  margin-bottom: 0;
+}
+
 /*# sourceMappingURL=style.css.map */

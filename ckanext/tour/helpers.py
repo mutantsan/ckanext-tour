@@ -1,9 +1,13 @@
-
-def tour_hello():
-    return "Hello, tour!"
+from ckanext.tour.model import TourStep
 
 
-def get_helpers():
-    return {
-        "tour_hello": tour_hello,
-    }
+def tour_get_position_options():
+    return [
+        {"value": step, "text": step}
+        for step in (
+            TourStep.Position.bottom,
+            TourStep.Position.top,
+            TourStep.Position.right,
+            TourStep.Position.left,
+        )
+    ]

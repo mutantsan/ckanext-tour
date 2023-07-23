@@ -20,6 +20,7 @@ def upgrade():
     op.create_table(
         "tour",
         sa.Column("id", sa.Text, primary_key=True, unique=True),
+        sa.Column("title", sa.Text, nullable=False),
         sa.Column("state", sa.Text, nullable=False, server_default="active"),
         sa.Column("anchor", sa.Text, nullable=False),
         sa.Column("page", sa.Text, nullable=True),

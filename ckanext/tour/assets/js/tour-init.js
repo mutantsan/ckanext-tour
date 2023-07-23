@@ -1,6 +1,5 @@
-this.ckan.module('init-tour', function (jQuery) {
+this.ckan.module('tour-init', function (jQuery) {
     return {
-        /* An object of module options */
         options: {
             template: [
                 '<a id="intro-switch" href="#" class="btn btn-sm question"><i class="fa fa-lg fa-question-circle"></i></a>',

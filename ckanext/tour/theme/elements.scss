@@ -1,0 +1,37 @@
+.tour-steps {
+    margin-bottom: 16px;
+
+    .tour-steps__steps {
+        margin-bottom: 16px;
+
+        .tour-step {
+            border: 1px solid $step-border-color;
+            border-radius: $step-border-radius;
+            padding: 8px;
+            margin-bottom: 8px;
+
+            position: relative;
+
+            .form-group {
+                margin-bottom: 16px;
+            }
+
+            .image-upload {
+                .form-group {
+                    margin-bottom: 0;
+                }
+            }
+
+            .remove-step {
+                position: absolute;
+                right: 0;
+                top: 0;
+            }
+
+            &:last-of-type {
+                margin-bottom: 0;
+            }
+        }
+    }
+
+}

@@ -25,6 +25,7 @@ class Tour(tk.BaseModel):
 
     id = Column(Text, primary_key=True, default=make_uuid)
 
+    title = Column(Text, nullable=False)
     state = Column(Text, nullable=False, default=State.active)
     author_id = Column(ForeignKey(model.User.id, ondelete="CASCADE"), primary_key=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
@@ -36,7 +37,7 @@ class Tour(tk.BaseModel):
     user = relationship(model.User)
 
     def __repr__(self):
-        return f"Tour(id={self.id!r} author_id={self.author_id!r}"
+        return f"Tour(title={self.title}"
 
     @classmethod
     def create(cls, data_dict) -> Self:
@@ -50,6 +51,7 @@ class Tour(tk.BaseModel):
     def dictize(self, context):
         return {
             "id": self.id,
+            "title": self.title,
             "author_id": self.author_id,
             "state": self.state,
             "created_at": self.created_at.isoformat(),

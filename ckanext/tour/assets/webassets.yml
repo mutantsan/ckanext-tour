@@ -4,11 +4,19 @@ tour-js:
   contents:
     - js/vendor/intro.min.js
     - js/vendor/mobile-detect.min.js
-    - js/init-tour.js
+    - js/tour-init.js
+    - js/tour-steps.js
+    - js/tour-htmx.js
 
+tour-htmx:
+  filter: rjsmin
+  output: ckanext-tour/%(version)s-tour-htmx.js
+  contents:
+    - js/vendor/htmx.min.js
 
 tour-css:
   filter: cssrewrite
   output: ckanext-tour/%(version)s-tour.css
   contents:
     - css/vendor/introjs.min.css
+    - css/style.css
