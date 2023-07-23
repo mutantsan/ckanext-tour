@@ -1,0 +1,188 @@
+from __future__ import annotations
+
+import logging
+from datetime import datetime
+from typing import Any
+
+from sqlalchemy import Column, DateTime, ForeignKey, Text
+from sqlalchemy.orm import Query, relationship
+from typing_extensions import Self
+
+from ckan import model
+from ckan.model.types import make_uuid
+from ckan.plugins import toolkit as tk
+
+
+log = logging.getLogger(__name__)
+
+
+class Tour(tk.BaseModel):
+    __tablename__ = "tour"
+
+    class State:
+        active = "active"
+        inactive = "inactive"
+
+    id = Column(Text, primary_key=True, default=make_uuid)
+
+    state = Column(Text, nullable=False, default=State.active)
+    author_id = Column(ForeignKey(model.User.id, ondelete="CASCADE"), primary_key=True)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    modified_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+    anchor = Column(Text, nullable=False)
+    page = Column(Text, nullable=True)
+
+    user = relationship(model.User)
+
+    def __repr__(self):
+        return f"Tour(id={self.id!r} author_id={self.author_id!r}"
+
+    @classmethod
+    def create(cls, data_dict) -> Self:
+        tour = cls(**data_dict)
+
+        model.Session.add(tour)
+        model.Session.commit()
+
+        return tour
+
+    def dictize(self, context):
+        return {
+            "id": self.id,
+            "author_id": self.author_id,
+            "state": self.state,
+            "created_at": self.created_at.isoformat(),
+            "modified_at": self.modified_at.isoformat(),
+            "anchor": self.anchor,
+            "page": self.page,
+            "steps": [step.dictize(context) for step in self.steps],
+        }
+
+    @property
+    def steps(self) -> list[TourStep]:
+        return [request_study for request_study in TourStep.get_by_tour(self.id)]
+
+    @classmethod
+    def get(cls, tour_id: str) -> Self | None:
+        query: Query = model.Session.query(cls).filter(cls.id == tour_id)
+
+        return query.one_or_none()
+
+    @classmethod
+    def all(cls) -> list[Tour]:
+        query: Query = model.Session.query(cls).order_by(cls.created_at.desc())
+
+        return query.all()  # type: ignore
+
+
+class TourStep(tk.BaseModel):
+    __tablename__ = "tour_step"
+
+    class Position:
+        bottom = "bottom"
+        top = "top"
+        right = "right"
+        left = "left"
+
+    id = Column(Text, primary_key=True, default=make_uuid)
+
+    title = Column(Text, nullable=True)
+    element = Column(Text)
+    intro = Column(Text, nullable=True)
+    position = Column(Text, default=Position.bottom)
+    tour_id = Column(Text, ForeignKey("tour.id", ondelete="CASCADE"))
+
+    @classmethod
+    def create(cls, data_dict) -> Self:
+        tour_step = cls(**data_dict)
+
+        model.Session.add(tour_step)
+        model.Session.commit()
+
+        return tour_step
+
+    @classmethod
+    def get_by_tour(cls, touri_d: str) -> list[Self]:
+        query: Query = model.Session.query(cls).filter(cls.tour_id == _)
+
+        return query.all()
+
+    @property
+    def image(self) -> TourStepImage:
+        return TourStepImage.get_by_step(self.id)
+
+    def dictize(self, context):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "element": self.element,
+            "intro": self.intro,
+            "position": self.position,
+            "tour_id": self.tour_id,
+            "image": [request_file.dictize(context) for request_file in self.files],
+        }
+
+
+class TourStepImage(tk.BaseModel):
+    __tablename__ = "tour_step_image"
+
+    id = Column(Text, primary_key=True, default=make_uuid)
+
+    file_id = Column(Text, unique=True)
+    uploaded_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    tour_step_id = Column(Text, ForeignKey("tour_step.id", ondelete="CASCADE"))
+
+    @classmethod
+    def create(cls, data_dict) -> Self:
+        # data_dict.pop("name", None)
+        # data_dict.pop("upload", None)
+
+        tour_step_image = cls(**data_dict)
+
+        model.Session.add(tour_step_image)
+        model.Session.commit()
+
+        return tour_step_image
+
+    @classmethod
+    def get(cls, file_id: str) -> Self | None:
+        query: Query = model.Session.query(cls).filter(cls.file_id == file_id)
+
+        return query.one_or_none()
+
+    @classmethod
+    def get_by_step(cls, tour_step_id: str) -> Self | None:
+        query: Query = model.Session.query(cls).filter(cls.tour_step_id == tour_step_id)
+
+        return query.all()  # type: ignore
+
+    def dictize(self, context):
+        uploaded_file = self.get_file_data(self.file_id)
+
+        return {
+            "id": self.id,
+            "file_id": self.file_id,
+            "tour_step_id": self.tour_step_id,
+            "uploaded_at": self.uploaded_at.isoformat(),
+            "url": uploaded_file["url"],
+        }
+
+    def delete(self) -> None:
+        model.Session().autoflush = False
+        model.Session.delete(self)
+
+    def get_file_data(self, file_id: str) -> dict[str, Any]:
+        """Return a real uploaded file data"""
+        try:
+            result = tk.get_action("files_file_show")(
+                {"ignore_auth": True}, {"id": file_id}
+            )
+        except tk.ObjectNotFound:
+            raise TourStepFileError("File not found.")
+
+        return result
+
+
+class TourStepFileError(Exception):
+    pass

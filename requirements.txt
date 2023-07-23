@@ -1,0 +1,2 @@
+ckanext-files==0.0.3
+ckanext-admin-panel==0.0.1

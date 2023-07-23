@@ -1,61 +1,51 @@
+from __future__ import annotations
+
 import ckan.plugins as plugins
-import ckan.plugins.toolkit as toolkit
+import ckan.plugins.toolkit as tk
+
+from ckanext.admin_panel.interfaces import IAdminPanel
+from ckanext.admin_panel.types import SectionConfig, ConfigurationItem
 
 
-# import ckanext.tour.cli as cli
-# import ckanext.tour.helpers as helpers
-# import ckanext.tour.views as views
-# from ckanext.tour.logic import (
-#     action, auth, validators
-# )
-
-
+@tk.blanket.helpers
+@tk.blanket.actions
+@tk.blanket.auth_functions
+@tk.blanket.blueprints
 class TourPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
-    
-    # plugins.implements(plugins.IAuthFunctions)
-    # plugins.implements(plugins.IActions)
-    # plugins.implements(plugins.IBlueprint)
-    # plugins.implements(plugins.IClick)
-    # plugins.implements(plugins.ITemplateHelpers)
-    # plugins.implements(plugins.IValidators)
-    
+    plugins.implements(IAdminPanel)
 
     # IConfigurer
 
     def update_config(self, config_):
-        toolkit.add_template_directory(config_, "templates")
-        toolkit.add_public_directory(config_, "public")
-        toolkit.add_resource("assets", "tour")
+        tk.add_template_directory(config_, "templates")
+        tk.add_public_directory(config_, "public")
+        tk.add_resource("assets", "tour")
 
-    
-    # IAuthFunctions
+    # IAdminPanel
 
-    # def get_auth_functions(self):
-    #     return auth.get_auth_functions()
-
-    # IActions
-
-    # def get_actions(self):
-    #     return action.get_actions()
-
-    # IBlueprint
-
-    # def get_blueprint(self):
-    #     return views.get_blueprints()
-
-    # IClick
-
-    # def get_commands(self):
-    #     return cli.get_commands()
-
-    # ITemplateHelpers
-
-    # def get_helpers(self):
-    #     return helpers.get_helpers()
-
-    # IValidators
-
-    # def get_validators(self):
-    #     return validators.get_validators()
-    
+    def register_config_sections(
+        self, config_list: list[SectionConfig]
+    ) -> list[SectionConfig]:
+        config_list.append(
+            SectionConfig(
+                name="Tour",
+                configs=[
+                    ConfigurationItem(
+                        name="Global settings",
+                        blueprint="tour.list",
+                    ),
+                    ConfigurationItem(
+                        name="Manage tours",
+                        blueprint="tour.list",
+                        info="Manage existing tours",
+                    ),
+                    ConfigurationItem(
+                        name="Add tour",
+                        blueprint="user.index",
+                        info="Add new tour",
+                    ),
+                ],
+            )
+        )
+        return config_list
