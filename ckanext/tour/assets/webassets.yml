@@ -1,0 +1,14 @@
+# tour-js:
+#   filter: rjsmin
+#   output: ckanext-tour/%(version)s-tour.js
+#   contents:
+#     - js/tour.js
+#   extra:
+#     preload:
+#       - base/main
+
+# tour-css:
+#   filter: cssrewrite
+#   output: ckanext-tour/%(version)s-tour.css
+#   contents:
+#     - css/tour.css
