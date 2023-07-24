@@ -1,11 +1,75 @@
-import ckan.plugins.toolkit as tk
+from __future__ import annotations
+
+from typing import Any, Dict
+from ckan.lib.navl.validators import not_missing
+
+from ckan.logic.schema import validator_args
+
+from ckanext.tour.model import TourStep
+
+Schema = Dict[str, Any]
 
 
-def tour_get_sum():
-    not_empty = tk.get_validator("not_empty")
-    convert_int = tk.get_validator("convert_int")
+@validator_args
+def tour_create(
+    not_empty, ignore, ignore_missing, unicode_safe, user_id_or_name_exists
+) -> Schema:
+    step_schema = tour_step_schema()
+    step_schema["tour_id"] = [ignore_missing]
 
     return {
-        "left": [not_empty, convert_int],
-        "right": [not_empty, convert_int]
+        "title": [not_empty, unicode_safe],
+        "anchor": [ignore_missing, unicode_safe],
+        "page": [ignore_missing, unicode_safe],
+        "author_id": [not_empty, user_id_or_name_exists],
+        "steps": step_schema,
+        "__extras": [ignore],
     }
+
+
+@validator_args
+def tour_step_schema(
+    not_empty, ignore_missing, unicode_safe, default, one_of, tour_tour_exist
+) -> Schema:
+    image_schema = tour_step_image_schema()
+    image_schema["tour_step_id"] = [ignore_missing]
+    image_schema["name"] = [ignore_missing]
+
+    return {
+        "title": [ignore_missing, unicode_safe],
+        "element": [not_empty, unicode_safe],
+        "intro": [ignore_missing, unicode_safe],
+        "position": [
+            default(TourStep.Position.bottom),
+            one_of(
+                [
+                    TourStep.Position.bottom,
+                    TourStep.Position.top,
+                    TourStep.Position.left,
+                    TourStep.Position.right,
+                ]
+            ),
+        ],
+        "url": [ignore_missing, unicode_safe],
+        "image": image_schema,
+        "tour_id": [not_empty, unicode_safe, tour_tour_exist],
+    }
+
+
+@validator_args
+def tour_step_image_schema(not_missing, unicode_safe, tour_tour_step_exist) -> Schema:
+    return {
+        "name": [not_missing, unicode_safe],
+        "upload": [not_missing],
+        "tour_step_id": [not_missing, unicode_safe, tour_tour_step_exist],
+    }
+
+
+@validator_args
+def tour_list() -> Schema:
+    return {}
+
+
+@validator_args
+def tour_remove(not_empty, unicode_safe, tour_tour_exist) -> Schema:
+    return {"id": [not_empty, unicode_safe, tour_tour_exist]}

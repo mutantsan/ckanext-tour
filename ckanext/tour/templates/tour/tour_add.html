@@ -9,8 +9,9 @@
 {% block ap_content %}
     <h1>{{ _("Tour add") }}</h1>
 
+    {{ errors }}
     <h1>Tour add form:</h1>
-    <form action="{{ h.url_for("tour.add") }}" method="POST">
+    <form action="{{ h.url_for("tour.add") }}" method="POST" enctype="multipart/form-data">
         {% call form.input("title", label=_("Tour title"), value=data.title, attrs={'required': 1, 'class': 'form-control'}) %}
             {{ form.info(_("A tour title to explain what is it for")) }}
         {% endcall %}

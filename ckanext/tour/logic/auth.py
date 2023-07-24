@@ -1,12 +1,10 @@
-import ckan.plugins.toolkit as tk
+def tour_create(context, data_dict):
+    return {"success": False}
 
 
-@tk.auth_allow_anonymous_access
-def tour_get_sum(context, data_dict):
-    return {"success": True}
+def tour_remove(context, data_dict):
+    return {"success": False}
 
 
-def get_auth_functions():
-    return {
-        "tour_get_sum": tour_get_sum,
-    }
+def tour_list(context, data_dict):
+    return {"success": False}

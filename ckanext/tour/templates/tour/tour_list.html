@@ -10,5 +10,46 @@
 {% block ap_content %}
     <h1>{{ _("Tour list") }}</h1>
 
-    <h1>hello world</h1>
+    <div class="row g-3">
+        <form action="{{ h.url_for("tour.list") }}" method="POST">
+            <div class="bulk-actions">
+                {{ form.select('bulk-action', id='bulk-action', label=_('Action'), options=bulk_options, selected="", error=error) }}
+
+                <input type="submit" id="apply-bulk" name="apply-bulk" value="Apply to selected items" class="btn btn-primary mb-3">
+            </div>
+
+            <table class="table table-primary table-sm">
+                <tr>
+                    <th>{{ form.checkbox() }}</th>
+                    <th>{{ _("Title") }}</th>
+                    <th>{{ _("Anchor") }}</th>
+                    <th>{{ _("Page") }}</th>
+                    <th>{{ _("State") }}</th>
+                    <th>{{ _("Steps") }}</th>
+                    <th>{{ _("Actions") }}</th>
+                </tr>
+
+                {% for tour in page.items %}
+                    <tr>
+                        <td>
+                            {{ form.checkbox() }}
+                        </td>
+                        <td>{{ tour.title }}</td>
+                        <td>{{ tour.anchor }}</td>
+                        <td>{{ tour.page }}</td>
+                        <td>{{ tour.state | title }}</td>
+                        <td>{{ tour.steps | length }}</td>
+                        <td>
+                            <button class="btn btn-danger">
+                                {{ _("Delete") }}
+                            </button>
+                            <button class="btn btn-primary">
+                                {{ _("Edit") }}
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </form>
+    </div> <!-- row -->
 {% endblock ap_content %}

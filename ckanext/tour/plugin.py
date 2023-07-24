@@ -11,6 +11,7 @@ from ckanext.admin_panel.types import SectionConfig, ConfigurationItem
 @tk.blanket.actions
 @tk.blanket.auth_functions
 @tk.blanket.blueprints
+@tk.blanket.validators
 class TourPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(IAdminPanel)
@@ -34,7 +35,7 @@ class TourPlugin(plugins.SingletonPlugin):
                     ConfigurationItem(
                         name="Global settings",
                         blueprint="tour.config",
-                        info="Global configuration for a tour"
+                        info="Global configuration for a tour",
                     ),
                     ConfigurationItem(
                         name="Manage tours",

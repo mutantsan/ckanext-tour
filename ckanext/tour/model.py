@@ -12,6 +12,7 @@ from ckan import model
 from ckan.model.types import make_uuid
 from ckan.plugins import toolkit as tk
 
+from ckanext.tour.exception import TourStepFileError
 
 log = logging.getLogger(__name__)
 
@@ -47,6 +48,10 @@ class Tour(tk.BaseModel):
         model.Session.commit()
 
         return tour
+
+    def delete(self) -> None:
+        model.Session().autoflush = False
+        model.Session.delete(self)
 
     def dictize(self, context):
         return {
@@ -104,9 +109,23 @@ class TourStep(tk.BaseModel):
 
         return tour_step
 
+    def delete(self) -> None:
+        """Drop step and related image"""
+        if self.image:
+            self.image.delete()
+
+        model.Session().autoflush = False
+        model.Session.delete(self)
+
     @classmethod
-    def get_by_tour(cls, touri_d: str) -> list[Self]:
-        query: Query = model.Session.query(cls).filter(cls.tour_id == _)
+    def get(cls, tour_step_id: str) -> Self | None:
+        query: Query = model.Session.query(cls).filter(cls.id == tour_step_id)
+
+        return query.one_or_none()
+
+    @classmethod
+    def get_by_tour(cls, tour_id: str) -> list[Self]:
+        query: Query = model.Session.query(cls).filter(cls.tour_id == tour_id)
 
         return query.all()
 
@@ -122,7 +141,7 @@ class TourStep(tk.BaseModel):
             "intro": self.intro,
             "position": self.position,
             "tour_id": self.tour_id,
-            "image": [request_file.dictize(context) for request_file in self.files],
+            "image": self.image.dictize(context) if self.image else None,
         }
 
 
@@ -157,7 +176,7 @@ class TourStepImage(tk.BaseModel):
     def get_by_step(cls, tour_step_id: str) -> Self | None:
         query: Query = model.Session.query(cls).filter(cls.tour_step_id == tour_step_id)
 
-        return query.all()  # type: ignore
+        return query.one_or_none()  # type: ignore
 
     def dictize(self, context):
         uploaded_file = self.get_file_data(self.file_id)
@@ -171,6 +190,14 @@ class TourStepImage(tk.BaseModel):
         }
 
     def delete(self) -> None:
+        """Drop step image and related file from file system"""
+        try:
+            tk.get_action("files_file_delete")(
+                {"ignore_auth": True}, {"id": self.file_id}
+            )
+        except tk.ObjectNotFound:
+            raise TourStepFileError("Related file not found.")
+
         model.Session().autoflush = False
         model.Session.delete(self)
 
@@ -181,10 +208,6 @@ class TourStepImage(tk.BaseModel):
                 {"ignore_auth": True}, {"id": file_id}
             )
         except tk.ObjectNotFound:
-            raise TourStepFileError("File not found.")
+            raise TourStepFileError("Related file not found.")
 
         return result
-
-
-class TourStepFileError(Exception):
-    pass
