@@ -8,6 +8,7 @@ from ckan.lib import uploader
 from ckan.tests import factories
 
 import ckanext.tour.tests.factories as tour_factories
+from ckanext.tour.tests.helpers import CSV_DATA, FakeFileStorage
 
 fake = Faker()
 
@@ -38,7 +39,7 @@ class SysadminFactory(factories.Sysadmin):
 
 
 @pytest.fixture
-def validation_setup(monkeypatch, ckan_config, tmpdir):
+def mock_storage(monkeypatch, ckan_config, tmpdir):
     monkeypatch.setitem(ckan_config, "ckan.storage_path", str(tmpdir))
     monkeypatch.setattr(uploader, "get_storage_path", lambda: str(tmpdir))
 
@@ -67,20 +68,16 @@ def validation_setup(monkeypatch, ckan_config, tmpdir):
 #     yield _prepare_data
 
 
-# @pytest.fixture
-# def rd_study_file_data():
-#     def _prepare_data(**kwargs):
-#         data = {
-#             "entity_type": rd_model.DataRequestFile.Entity.data_request,
-#             "entity_id": None,
-#             "mimetype": "text/csv",
-#             "name": "data.csv",
-#             "upload": FakeFileStorage(BytesIO(CSV_DATA), "data.csv"),
-#             "data_request": None,
-#         }
+@pytest.fixture
+def tour_image_data():
+    def _prepare_data(**kwargs):
+        data = {
+            "upload": FakeFileStorage(BytesIO(CSV_DATA), "data.csv"),
+            "url": None,
+        }
 
-#         data.update(**kwargs)
+        data.update(**kwargs)
 
-#         return data
+        return data
 
-#     yield _prepare_data
+    yield _prepare_data

@@ -1,16 +1,72 @@
+from turtle import position
 import pytest
 
 import ckan.plugins.toolkit as tk
 from ckan.tests.helpers import call_action
 
+import ckanext.tour.model as tour_model
 
-@pytest.mark.usefixtures("with_plugins", "clean_db", "validation_setup")
+
+@pytest.mark.usefixtures("with_plugins", "clean_db", "mock_storage")
 class TestTourCreate:
     def test_basic_create(self, tour_factory):
         tour = tour_factory()
 
-        pass
+        assert tour["id"]
+        assert tour["anchor"]
+        assert tour["author_id"]
+        assert tour["created_at"]
+        assert tour["modified_at"]
+        assert tour["title"]
+        assert tour["page"] is None
+        assert tour["state"] == tour_model.Tour.State.active
+        assert tour["steps"][0]["id"]
+        assert tour["steps"][0]["element"]
+        assert tour["steps"][0]["image"]
+        assert tour["steps"][0]["intro"]
+        assert tour["steps"][0]["position"]
+        assert tour["steps"][0]["title"]
+        assert tour["steps"][0]["tour_id"] == tour["id"]
 
+
+@pytest.mark.usefixtures("with_plugins", "clean_db", "mock_storage")
+class TestTourStepCreate:
+    def test_basic_create(self, tour_factory, tour_step_factory):
+        tour = tour_factory(steps=[])
+        tour_step = tour_step_factory(tour_id=tour["id"])
+
+        tour = call_action("tour_show", id=tour["id"])
+
+        assert tour["steps"][0]["id"] == tour_step["id"]
+
+    def test_wrong_position(self, tour_factory, tour_step_factory):
+        tour = tour_factory(steps=[])
+
+        with pytest.raises(tk.ValidationError, match="Value must be one of"):
+            tour_step_factory(tour_id=tour["id"], position="xxx")
+
+    def test_upload_image(self, tour_factory, tour_step_factory, tour_image_data):
+        tour = tour_factory(steps=[])
+
+        assert tour_step_factory(tour_id=tour["id"], image=[tour_image_data()])
+
+    def test_upload_multiple_image(
+        self, tour_factory, tour_step_factory, tour_image_data
+    ):
+        tour = tour_factory(steps=[])
+
+        with pytest.raises(tk.ValidationError, match="only 1 image for step allowed"):
+            tour_step_factory(
+                tour_id=tour["id"], image=[tour_image_data(), tour_image_data()]
+            )
+
+    def test_missing_element(
+        self, tour_factory, tour_step_factory, tour_image_data
+    ):
+        tour = tour_factory(steps=[])
+
+        with pytest.raises(tk.ValidationError, match="Missing value"):
+            tour_step_factory(tour_id=tour["id"], element=None)
 
     # def test_create_without_studies(self, user):
     #     with pytest.raises(

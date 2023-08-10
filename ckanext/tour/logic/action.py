@@ -16,7 +16,7 @@ from ckanext.tour.exception import TourStepFileError
 def tour_show(context, data_dict):
     tk.check_access("tour_show", context, data_dict)
 
-    return tour_model.Tour.get(data_dict["id"]).dictize(context) # type: ignore
+    return tour_model.Tour.get(data_dict["id"]).dictize(context)  # type: ignore
 
 
 @tk.side_effect_free

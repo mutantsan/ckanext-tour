@@ -34,7 +34,7 @@ def tour_create(
 
 @validator_args
 def tour_step_schema(
-    not_empty, ignore_missing, unicode_safe, default, one_of, tour_tour_exist
+    not_empty, ignore, ignore_missing, unicode_safe, default, one_of, tour_tour_exist
 ) -> Schema:
     image_schema = tour_step_image_schema()
     image_schema["tour_step_id"] = [ignore_missing]
@@ -58,6 +58,7 @@ def tour_step_schema(
         "url": [ignore_missing, unicode_safe],
         "image": image_schema,
         "tour_id": [not_empty, unicode_safe, tour_tour_exist],
+        "__extras": [ignore],
     }
 
 
