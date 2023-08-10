@@ -71,6 +71,7 @@ class TourListView(MethodView):
             },
         )
 
+
 class TourAddView(MethodView):
     def get(self) -> str:
         return tk.render("tour/tour_add.html", extra_vars={"data": {}})
@@ -140,6 +141,46 @@ class TourAddView(MethodView):
         }
 
 
+class TourUpdateView(MethodView):
+    def get(self, tour_id: str) -> str:
+        context: types.Context = {
+            "user": tk.current_user.name,
+            "auth_user_obj": tk.current_user,
+        }
+
+        try:
+            tour = tk.get_action("tour_show")(context, {"id": tour_id})
+        except tk.ValidationError:
+            return tk.render("tour/tour_404.html")
+
+        return tk.render("tour/tour_edit.html", extra_vars={"tour": tour})
+
+    def post(self) -> str:
+        data_dict = {}
+
+        try:
+            tk.get_action("tour_update")(
+                {
+                    "user": tk.current_user.name,
+                    "auth_user_obj": tk.current_user,
+                },
+                data_dict,
+            )
+        except tk.ValidationError as e:
+            return tk.render(
+                "tour/tour_edit.html",
+                extra_vars={
+                    "data": data_dict,
+                    "errors": e.error_dict,
+                    "error_summary": e.error_summary,
+                },
+            )
+
+        tk.h.flash_success(tk._("The tour has been updated!"))
+
+        return tk.render("tour/tour_add.html", extra_vars={"data": {}, "errors": {}})
+
+
 class TourAddStepView(MethodView):
     def post(self) -> str:
         tk.asint(tk.request.form.get("stepId", 0))
@@ -161,6 +202,10 @@ tour.add_url_rule(
     "/admin_panel/config/tour/list", view_func=TourListView.as_view("list")
 )
 tour.add_url_rule("/admin_panel/config/tour/new", view_func=TourAddView.as_view("add"))
+tour.add_url_rule(
+    "/admin_panel/config/tour/edit/<tour_id>",
+    view_func=TourUpdateView.as_view("edit"),
+)
 tour.add_url_rule(
     "/admin_panel/config/tour/add_step", view_func=TourAddStepView.as_view("add_step")
 )

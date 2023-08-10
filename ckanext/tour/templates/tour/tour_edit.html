@@ -3,20 +3,20 @@
 {% import 'macros/form.html' as form %}
 
 {% block breadcrumb_content %}
-    <li>{% link_for _("Tour add"), named_route='tour.add' %}</li>
+    <li>{% link_for _("Tour edit"), named_route='tour.edit', tour_id=tour.id %}</li>
 {% endblock breadcrumb_content %}
 
 {% block ap_content %}
-    <form action="{{ h.url_for("tour.add") }}" method="POST" enctype="multipart/form-data">
-        {% call form.input("title", label=_("Tour title"), value=data.title, attrs={'required': 1, 'class': 'form-control'}) %}
+    <form action="{{ h.url_for('tour.edit', tour_id=tour.id) }}" method="POST" enctype="multipart/form-data">
+        {% call form.input("title", label=_("Tour title"), value=tour.title, attrs={'required': 1, 'class': 'form-control'}) %}
             {{ form.info(_("A tour title to explain what is it for")) }}
         {% endcall %}
 
-        {% call form.input("anchor", label=_("Query anchor"), value=data.anchor) %}
+        {% call form.input("anchor", label=_("Query anchor"), value=tour.anchor) %}
             {{ form.info(_('An anchor element query that will trigger the tour. Could be a tooltip, button or any HTML element.', classes=['info-help-tight'])) }}
         {% endcall %}
 
-        {% call form.input("page", label=_("Page anchor"), value=data.page) %}
+        {% call form.input("page", label=_("Page anchor"), value=tour.page) %}
             {{ form.info(_('Optional. A path to a page, where tour will be applied. Note, that a page tour will be triggered automatically.', classes=['info-help-tight'])) }}
         {% endcall %}
 
@@ -24,13 +24,11 @@
 
         <div
             class="tour-steps"
-            data-module="tour-steps tour-htmx">
+            -module="tour-steps tour-htmx">
 
             <div class="tour-steps__steps">
-                {% for step in data.steps %}
+                {% for step in tour.steps %}
                     {% snippet 'tour/tour_step.html', step=step %}
-                {% else %}
-                    {% snippet 'tour/tour_step.html', step={} %}
                 {% endfor %}
             </div>
 
@@ -50,7 +48,7 @@
         </div>
 
         <div class="form-actions js-form-wrapper form-wrapper">
-            <button class="btn btn-primary" type="submit">{{ _("Create tour") }}</button>
+            <button class="btn btn-primary" type="submit">{{ _("Update tour") }}</button>
         </div>
     </form>
 {% endblock ap_content %}

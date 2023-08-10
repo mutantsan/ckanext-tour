@@ -43,9 +43,9 @@
                             <button class="btn btn-danger">
                                 {{ _("Delete") }}
                             </button>
-                            <button class="btn btn-primary">
+                            <a class="btn btn-primary" href="{{ h.url_for('tour.edit', tour_id=tour.id)}}">
                                 {{ _("Edit") }}
-                            </button>
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}

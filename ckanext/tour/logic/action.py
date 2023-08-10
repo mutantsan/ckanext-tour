@@ -12,6 +12,14 @@ from ckanext.tour.exception import TourStepFileError
 
 
 @tk.side_effect_free
+@validate(schema.tour_show)
+def tour_show(context, data_dict):
+    tk.check_access("tour_show", context, data_dict)
+
+    return tour_model.Tour.get(data_dict["id"]).dictize(context) # type: ignore
+
+
+@tk.side_effect_free
 @validate(schema.tour_list)
 def tour_list(context, data_dict):
     tk.check_access("tour_list", context, data_dict)

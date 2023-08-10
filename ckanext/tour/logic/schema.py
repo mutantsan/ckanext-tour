@@ -11,6 +11,11 @@ Schema = Dict[str, Any]
 
 
 @validator_args
+def tour_show(not_empty, unicode_safe, tour_tour_exist) -> Schema:
+    return {"id": [not_empty, unicode_safe, tour_tour_exist]}
+
+
+@validator_args
 def tour_create(
     not_empty, ignore, ignore_missing, unicode_safe, user_id_or_name_exists
 ) -> Schema:
