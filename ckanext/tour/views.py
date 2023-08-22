@@ -184,7 +184,7 @@ class TourUpdateView(MethodView):
 class TourAddStepView(MethodView):
     def post(self) -> str:
         tk.asint(tk.request.form.get("stepId", 0))
-        return tk.render("tour/tour_step.html", extra_vars={"step": {}})
+        return tk.render("tour/snippets/tour_step.html", extra_vars={"step": {}})
 
 
 class TourConfigView(MethodView):

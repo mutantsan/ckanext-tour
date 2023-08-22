@@ -1,4 +1,4 @@
-{% extends 'admin_panel/base.html' %}
+{% extends 'tour/base.html' %}
 
 {% import 'macros/form.html' as form %}
 
@@ -28,9 +28,9 @@
 
             <div class="tour-steps__steps">
                 {% for step in data.steps %}
-                    {% snippet 'tour/tour_step.html', step=step %}
+                    {% snippet 'tour/snippets/tour_step.html', step=step %}
                 {% else %}
-                    {% snippet 'tour/tour_step.html', step={} %}
+                    {% snippet 'tour/snippets/tour_step.html', step={} %}
                 {% endfor %}
             </div>
 
