@@ -14,7 +14,7 @@ from ckanext.admin_panel.types import SectionConfig, ConfigurationItem
 @tk.blanket.validators
 class TourPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
-    plugins.implements(IAdminPanel)
+    plugins.implements(IAdminPanel, inherit=True)
 
     # IConfigurer
 
