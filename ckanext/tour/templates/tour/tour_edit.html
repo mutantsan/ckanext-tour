@@ -6,7 +6,7 @@
     <li>{% link_for _("Tour edit"), named_route='tour.edit', tour_id=tour.id %}</li>
 {% endblock breadcrumb_content %}
 
-{% block ap_content %}
+{% block ap_primary %}
     <form action="{{ h.url_for('tour.edit', tour_id=tour.id) }}" method="POST" enctype="multipart/form-data">
         {% call form.input("title", label=_("Tour title"), value=tour.title, attrs={'required': 1, 'class': 'form-control'}) %}
             {{ form.info(_("A tour title to explain what is it for")) }}
@@ -51,7 +51,7 @@
             <button class="btn btn-primary" type="submit">{{ _("Update tour") }}</button>
         </div>
     </form>
-{% endblock ap_content %}
+{% endblock ap_primary %}
 
 {% block scripts %}
     {{ super() }}
