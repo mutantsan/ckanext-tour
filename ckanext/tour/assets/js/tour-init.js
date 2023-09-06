@@ -12,7 +12,8 @@ this.ckan.module('tour-init', function (jQuery) {
         initialize: function () {
             intro = introJs();
             var introStart = true;
-            var visited = localStorage.getItem('intro');
+            // var visited = localStorage.getItem('intro');
+            var visited = false;
             introStart = visited ? false : true;
             var md = new MobileDetect(window.navigator.userAgent);
             var isMobile = md.mobile() ? true : false;
@@ -32,22 +33,16 @@ this.ckan.module('tour-init', function (jQuery) {
                 showProgress: false, // default
                 steps: [
                     {
-                        element: '.search-input-group',
+                        element: '#dataset-search-form',
                         intro: this._('Here you can search datasets by a keyword.')
                     },
                     {
-                        element: '.filters',
-                        intro: this._('Here you can filter datasets.'),
-                        position: 'right'
+                        element: ".filters",
+                        intro: this._('Filter.')
                     },
                     {
-                        element: '.dataset-list',
-                        intro: this._('The matched datasets will list here.'),
-                        position: 'right'
-                    },
-                    {
-                        element: '#intro-switch',
-                        intro: this._('Click this question mark to show this help again.'),
+                        element: '.account-masthead',
+                        intro: this._('It is a toolbar.'),
                         position: 'right'
                     },
                     {

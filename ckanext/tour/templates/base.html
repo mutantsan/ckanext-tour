@@ -1,0 +1,15 @@
+{% ckan_extends %}
+
+{% block scripts %}
+    {{ super() }}
+
+    <span class="hidden" data-module="tour-init"></span>
+
+    {% asset 'tour/tour-js' %}
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+
+    {% asset 'tour/tour-css' %}
+{% endblock %}
