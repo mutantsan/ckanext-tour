@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from flask import Blueprint
+from flask import Blueprint, Response
 from flask.views import MethodView
 
 import ckan.types as types
@@ -56,7 +56,7 @@ class TourListView(MethodView):
                 width="10%",
                 actions=[
                     tk.h.ap_table_action(
-                        "tour.edit",
+                        "tour.delete",
                         tk._("Delete"),
                         {"tour_id": "$id"},
                         attributes={"class": "btn btn-danger"},
@@ -98,6 +98,7 @@ class TourListView(MethodView):
             "tour/tour_list.html",
             extra_vars={
                 "page": self._get_pager(tk.get_action("tour_list")(context, {})),
+                "columns": self._get_table_columns(),
                 "bulk_options": self._get_bulk_actions(),
             },
         )
@@ -212,6 +213,22 @@ class TourUpdateView(MethodView):
         return tk.render("tour/tour_add.html", extra_vars={"data": {}, "errors": {}})
 
 
+class TourDeleteView(MethodView):
+    def get(self, tour_id: str) -> str:
+        return tk.render("tour/tour_delete.html", extra_vars={"tour_id": tour_id})
+
+    def post(self, tour_id: str) -> Response:
+        try:
+            tk.get_action("tour_remove")({}, {"id": tour_id})
+        except tk.ObjectNotFound as e:
+            tk.h.flash_error(str(e))
+            return tk.redirect_to("tour.delete", tour_id=tour_id)
+        else:
+            tk.h.flash_success("Done!")
+
+        return tk.redirect_to("tour.list")
+
+
 class TourAddStepView(MethodView):
     def post(self) -> str:
         tk.asint(tk.request.form.get("stepId", 0))
@@ -233,6 +250,10 @@ tour.add_url_rule(
     "/admin_panel/config/tour/list", view_func=TourListView.as_view("list")
 )
 tour.add_url_rule("/admin_panel/config/tour/new", view_func=TourAddView.as_view("add"))
+tour.add_url_rule(
+    "/admin_panel/config/tour/delete/<tour_id>",
+    view_func=TourDeleteView.as_view("delete"),
+)
 tour.add_url_rule(
     "/admin_panel/config/tour/edit/<tour_id>",
     view_func=TourUpdateView.as_view("edit"),

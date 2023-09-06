@@ -54,11 +54,13 @@ def tour_remove(context, data_dict):
     tour = cast(tour_model.Tour, tour_model.Tour.get(data_dict["id"]))
 
     for step in tour.steps:
-        step.remove()
+        step.delete()
 
-    tour = tour_model.Tour.create(data_dict)
+    tour.delete()
 
-    return tour.dictize(context)
+    context["session"].commit()
+
+    return True
 
 
 @validate(schema.tour_step_schema)

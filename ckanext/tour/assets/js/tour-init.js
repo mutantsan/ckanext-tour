@@ -13,7 +13,7 @@ this.ckan.module('tour-init', function (jQuery) {
             intro = introJs();
             var introStart = true;
             // var visited = localStorage.getItem('intro');
-            var visited = false;
+            var visited = true;
             introStart = visited ? false : true;
             var md = new MobileDetect(window.navigator.userAgent);
             var isMobile = md.mobile() ? true : false;

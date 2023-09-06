@@ -26,8 +26,9 @@
                 {% snippet "admin_panel/config/snippets/sortable_table.html", items=page.items, columns=columns, order_by=order_by, sort=sort, bulk_check=1 %}
             {% else %}
                 <p>
-                    {{ _("No tours found.") }}
-                    <a href="{{ h.url_for('tour.list') }}">{{ _("Clear the search") }}</a>
+                {%- trans -%}
+                    No tours found. Want to <a href="{{ h.url_for('tour.add') }}">create</a> one?
+                {%- endtrans -%}
                 </p>
             {% endif %}
         </form>
