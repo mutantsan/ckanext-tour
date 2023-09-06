@@ -4,7 +4,9 @@ import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
 
 from ckanext.admin_panel.interfaces import IAdminPanel
-from ckanext.admin_panel.types import SectionConfig, ConfigurationItem
+from ckanext.admin_panel.types import SectionConfig, ConfigurationItem, ColRenderer
+
+from ckanext.tour.col_renderers import get_renderers
 
 
 @tk.blanket.helpers
@@ -51,3 +53,6 @@ class TourPlugin(plugins.SingletonPlugin):
             )
         )
         return config_list
+
+    def get_col_renderers(self) -> dict[str, ColRenderer]:
+        return get_renderers()

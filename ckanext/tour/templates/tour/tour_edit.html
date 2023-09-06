@@ -3,7 +3,8 @@
 {% import 'macros/form.html' as form %}
 
 {% block breadcrumb_content %}
-    <li>{% link_for _("Tour edit"), named_route='tour.edit', tour_id=tour.id %}</li>
+    <li>{% link_for _("Tour list"), named_route='tour.list' %}</li>
+    <li class="active">{% link_for _("Tour edit"), named_route='tour.edit', tour_id=tour.id %}</li>
 {% endblock breadcrumb_content %}
 
 {% block ap_content %}

@@ -26,6 +26,7 @@ class TourListView(MethodView):
             "tour/tour_list.html",
             extra_vars={
                 "page": self._get_pager(tk.get_action("tour_list")(context, {})),
+                "columns": self._get_table_columns(),
                 "bulk_options": self._get_bulk_actions(),
             },
         )
@@ -36,8 +37,38 @@ class TourListView(MethodView):
             page=tk.h.get_page_number(tk.request.args),
             url=tk.h.pager_url,
             item_count=len(tour_list),
-            items_per_page=20,
+            items_per_page=10,
         )
+
+    def _get_table_columns(self) -> list[dict[str, Any]]:
+        return [
+            tk.h.ap_table_column("title", "Title", sortable=False),
+            tk.h.ap_table_column("anchor", "Anchor", sortable=False),
+            tk.h.ap_table_column("page", "Page", sortable=False),
+            tk.h.ap_table_column("state", "State", sortable=False),
+            tk.h.ap_table_column(
+                "steps", "Steps", column_renderer="tour_steps", sortable=False
+            ),
+            tk.h.ap_table_column(
+                "actions",
+                sortable=False,
+                column_renderer="ap_action_render",
+                width="10%",
+                actions=[
+                    tk.h.ap_table_action(
+                        "tour.edit",
+                        tk._("Delete"),
+                        {"tour_id": "$id"},
+                        attributes={"class": "btn btn-danger"},
+                    ),
+                    tk.h.ap_table_action(
+                        "tour.edit",
+                        tk._("Edit"),
+                        {"tour_id": "$id"},
+                    ),
+                ],
+            ),
+        ]
 
     def _get_bulk_actions(self):
         return [
