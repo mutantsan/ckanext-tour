@@ -25,7 +25,7 @@ def tour_create(
         "title": [not_empty, unicode_safe],
         "anchor": [ignore_missing, unicode_safe],
         "page": [ignore_missing, unicode_safe],
-        "author_id": [ignore],
+        "author_id": [not_empty, user_id_or_name_exists],
         "steps": step_schema,
         "__extras": [ignore],
     }
