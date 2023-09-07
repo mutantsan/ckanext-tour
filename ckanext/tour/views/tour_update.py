@@ -27,6 +27,7 @@ class TourUpdateView(MethodView):
             return tk.render("tour/tour_404.html")
 
         data_dict = self._prepare_payload(tour_id)
+        import ipdb; ipdb.set_trace()
         data_dict["id"] = tour_id
 
         try:
@@ -59,7 +60,7 @@ class TourUpdateView(MethodView):
             "step_intro",
             "step_position",
             "image_url",
-            "image_upload",
+            # "image_upload",
             "clear_upload",
         )
         steps = {}
@@ -75,7 +76,7 @@ class TourUpdateView(MethodView):
                 steps.setdefault(idx, {})
                 steps[idx][field] = value
 
-        for idx, file in enumerate(tk.request.files.getlist("step_upload"), start=1):
+        for idx, file in enumerate(tk.request.files.getlist("image_upload"), start=1):
             if not file:
                 continue
 

@@ -60,8 +60,8 @@ class Tour(tk.BaseModel):
             "state": self.state,
             "created_at": self.created_at.isoformat(),
             "modified_at": self.modified_at.isoformat(),
-            "anchor": self.anchor,
-            "page": self.page,
+            "anchor": self.anchor or "",
+            "page": self.page or "",
             "steps": [step.dictize(context) for step in self.steps],
         }
 

@@ -16,7 +16,13 @@ def tour_show(not_empty, unicode_safe, tour_tour_exist) -> Schema:
 
 @validator_args
 def tour_create(
-    not_empty, ignore, ignore_missing, unicode_safe, user_id_or_name_exists
+    not_empty,
+    default,
+    ignore_missing,
+    unicode_safe,
+    user_id_or_name_exists,
+    one_of,
+    ignore,
 ) -> Schema:
     step_schema = tour_step_schema()
     step_schema["tour_id"] = [ignore_missing]
@@ -26,6 +32,10 @@ def tour_create(
         "anchor": [ignore_missing, unicode_safe],
         "page": [ignore_missing, unicode_safe],
         "author_id": [not_empty, user_id_or_name_exists],
+        "state": [
+            default(Tour.State.active),
+            one_of([Tour.State.active, Tour.State.inactive]),
+        ],
         "steps": step_schema,
         "__extras": [ignore],
     }
