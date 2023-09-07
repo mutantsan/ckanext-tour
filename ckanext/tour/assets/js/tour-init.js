@@ -10,15 +10,41 @@ this.ckan.module('tour-init', function (jQuery) {
         },
 
         initialize: function () {
-            intro = introJs();
-            var introStart = true;
-            // var visited = localStorage.getItem('intro');
-            var visited = true;
-            introStart = visited ? false : true;
-            var md = new MobileDetect(window.navigator.userAgent);
-            var isMobile = md.mobile() ? true : false;
+            $.proxyAll(this, /_/);
 
-            intro.setOptions({
+            this.intro = null;
+            this.isMobile = this._isMobile()
+
+            $.ajax({
+                url: this.sandbox.url("/api/action/tour_list"),
+                // data: {},
+                success: this._onSuccessRequest
+            });
+        },
+
+        _isMobile: function () {
+            var md = new MobileDetect(window.navigator.userAgent);
+            return md.mobile() ? true : false;
+        },
+
+        createMark: function () {
+            if (!this.mark) {
+                this.mark = jQuery(this.options.template);
+            }
+            return this.mark;
+        },
+
+        _onSuccessRequest: function (data) {
+            data.result.forEach(element => this._initIntro(element));
+        },
+
+        _initIntro: function (introData) {
+            var showed = localStorage.getItem('intro-' + introData.id);
+            var shouldStart = !showed && !this.isMobile;
+            var anchorExists = $(introData.anchor).length;
+
+            this.intro = introJs();
+            this.intro.setOptions({
                 overlayOpacity: 0.7,
                 nextLabel: ' &rarr; ',
                 prevLabel: '&larr; ',
@@ -31,49 +57,34 @@ this.ckan.module('tour-init', function (jQuery) {
                 showButtons: true, // default
                 showBullets: true, // default,
                 showProgress: false, // default
-                steps: [
-                    {
-                        element: '#dataset-search-form',
-                        intro: this._('Here you can search datasets by a keyword.')
-                    },
-                    {
-                        element: ".filters",
-                        intro: this._('Filter.')
-                    },
-                    {
-                        element: '.account-masthead',
-                        intro: this._('It is a toolbar.'),
-                        position: 'right'
-                    },
-                    {
-                        title: 'Test!',
-                        intro: '<img src="https://media3.giphy.com/media/xUNd9D6kBtEjkOGgYE/giphy.gif?cid=ecf05e47qlgq80obqtrt4q15om1rhttqgzct3k1ejhau0uu9&ep=v1_gifs_search&rid=giphy.gif&ct=g" /> test me up'
-                    }
-                ]
+                steps: this._prepareSteps(introData.steps),
             });
 
-            if (isMobile) {
-                introStart = false;
-            } else {
-                this.createMark().appendTo('.breadcrumb .active');
-                this.mark.on('click', this._onClick);
-            }
 
-            if (introStart) {
-                localStorage.setItem('intro', 1);
-                intro.start();
-            }
+            this.createMark().appendTo(anchorExists ? introData.anchor : '.breadcrumb .active');
+            this.mark.on('click', this._onClick);
+
+            // if (shouldStart) {
+            //     // for development
+            //     // localStorage.setItem('intro-' + introData.id, 1);
+            //     intro.start();
+            // }
         },
 
-        createMark: function () {
-            if (!this.mark) {
-                var element = this.mark = jQuery(this.options.template);
-            }
-            return this.mark;
+        _prepareSteps: function (steps) {
+            steps.forEach(step => {
+                if (step.image) {
+                    step.intro = step.intro + " " + $("<img />", {
+                        src: step.image.url
+                    })[0].outerHTML;
+                }
+            });
+
+            return steps;
         },
 
-        _onClick: function (event) {
-            intro.start();
+        _onClick: function (e) {
+            this.intro.start();
         }
     }
 });
