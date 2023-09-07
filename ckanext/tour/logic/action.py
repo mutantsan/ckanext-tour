@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, cast
 from datetime import datetime as dt
 
+import ckan.model as model
 import ckan.plugins.toolkit as tk
 from ckan.logic import validate
 
@@ -22,11 +23,17 @@ def tour_show(context, data_dict):
 @tk.side_effect_free
 @validate(schema.tour_list)
 def tour_list(context, data_dict):
+    """Return a list of tours from database"""
     tk.check_access("tour_list", context, data_dict)
 
-    tours = tour_model.Tour.all()
+    query = model.Session.query(tour_model.Tour)
 
-    return [tour.dictize(context) for tour in tours]
+    if data_dict.get("state"):
+        query = query.filter(tour_model.Tour.state == data_dict["state"])
+
+    query = query.order_by(tour_model.Tour.created_at.desc())
+
+    return [tour.dictize(context) for tour in query.all()]
 
 
 @validate(schema.tour_create)

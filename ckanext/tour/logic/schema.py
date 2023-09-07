@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 from typing import Any, Dict
-from ckan.lib.navl.validators import not_missing
 
 from ckan.logic.schema import validator_args
 
-from ckanext.tour.model import TourStep
+from ckanext.tour.model import TourStep, Tour
 
 Schema = Dict[str, Any]
 
@@ -72,8 +71,10 @@ def tour_step_image_schema(not_missing, unicode_safe, tour_tour_step_exist) -> S
 
 
 @validator_args
-def tour_list() -> Schema:
-    return {}
+def tour_list(ignore_empty, one_of) -> Schema:
+    return {
+        "state": [ignore_empty, one_of([Tour.State.active, Tour.State.inactive])],
+    }
 
 
 @validator_args
