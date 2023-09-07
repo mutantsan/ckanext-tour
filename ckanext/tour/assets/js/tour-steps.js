@@ -66,8 +66,6 @@ ckan.module("tour-steps", function ($) {
             this.addStepBtn.attr("hx-vals", JSON.stringify({
                 stepId: steps.last().data("step-id") + 1
             }))
-
-
         }
     };
 });
