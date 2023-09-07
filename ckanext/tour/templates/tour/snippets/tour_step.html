@@ -16,5 +16,5 @@
 
     {{ form.select('step_position', label=_('Position'), options=h.tour_get_position_options(), selected=step.step_position or step.position, error=error or {}) }}
 
-    {{ form.input('step_upload', label=_('Step image'), type='file', placeholder='', value='', error='', classes=['control-full']) }}
+    {{ form.input('step_upload', label=_('Step image'), type='file', placeholder='', value='', error='', attrs={"accept": "image/*", "class": "form-control"}) }}
 </fieldset>
