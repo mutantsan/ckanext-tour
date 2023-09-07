@@ -25,10 +25,22 @@ def tour_create(
         "title": [not_empty, unicode_safe],
         "anchor": [ignore_missing, unicode_safe],
         "page": [ignore_missing, unicode_safe],
-        "author_id": [not_empty, user_id_or_name_exists],
+        "author_id": [ignore],
         "steps": step_schema,
         "__extras": [ignore],
     }
+
+
+@validator_args
+def tour_update(
+    not_empty,
+    unicode_safe,
+    tour_tour_exist,
+) -> Schema:
+    tour_schema = tour_create()
+    tour_schema["id"] = [not_empty, unicode_safe, tour_tour_exist]
+    tour_schema["steps"] = tour_step_update()
+    return tour_schema
 
 
 @validator_args
@@ -62,6 +74,19 @@ def tour_step_schema(
 
 
 @validator_args
+def tour_step_update(
+    not_empty,
+    unicode_safe,
+    tour_tour_step_exist,
+) -> Schema:
+    step_schema = tour_step_schema()
+    step_schema.pop("tour_id")
+    step_schema["id"] = [not_empty, unicode_safe, tour_tour_step_exist]
+
+    return step_schema
+
+
+@validator_args
 def tour_step_image_schema(not_missing, unicode_safe, tour_tour_step_exist) -> Schema:
     return {
         "name": [not_missing, unicode_safe],
@@ -80,3 +105,8 @@ def tour_list(ignore_empty, one_of) -> Schema:
 @validator_args
 def tour_remove(not_empty, unicode_safe, tour_tour_exist) -> Schema:
     return {"id": [not_empty, unicode_safe, tour_tour_exist]}
+
+
+@validator_args
+def tour_step_remove(not_empty, unicode_safe, tour_tour_step_exist) -> Schema:
+    return {"id": [not_empty, unicode_safe, tour_tour_step_exist]}

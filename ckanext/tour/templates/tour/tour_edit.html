@@ -29,7 +29,7 @@
 
             <div class="tour-steps__steps">
                 {% for step in tour.steps %}
-                    {% snippet 'tour/snippets/tour_step.html', step=step %}
+                    {% snippet 'tour/snippets/tour_step.html', step=step, edit=1 %}
                 {% endfor %}
             </div>
 

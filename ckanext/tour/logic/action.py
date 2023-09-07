@@ -115,3 +115,61 @@ def tour_step_image_upload(context, data_dict):
     return tour_model.TourStepImage.create(
         {"file_id": result["id"], "tour_step_id": tour_step_id}
     ).dictize(context)
+
+
+@validate(schema.tour_update)
+def tour_update(context, data_dict):
+    tk.check_access("tour_update", context, data_dict)
+
+    tour = cast(tour_model.Tour, tour_model.Tour.get(data_dict["id"]))
+
+    tour.title = data_dict["title"]
+    tour.anchor = data_dict["anchor"]
+    tour.page = data_dict["page"]
+
+    model.Session.commit()
+
+    steps: list[dict[str, Any]] = data_dict.pop("steps", [])
+
+    form_steps: set[str] = {step["id"] for step in steps}
+    tour_steps: set[str] = {step.id for step in tour.steps}
+
+    for step_id in tour_steps - form_steps:
+        tk.get_action("tour_step_remove")(
+            {"ignore_auth": True},
+            {"id": step_id},
+        )
+
+    for step in steps:
+        tk.get_action("tour_step_update")(
+            {"ignore_auth": True},
+            step,
+        )
+
+    return tour.dictize(context)
+
+
+@validate(schema.tour_step_update)
+def tour_step_update(context, data_dict):
+    tk.check_access("tour_step_update", context, data_dict)
+
+    tour_step = cast(tour_model.Tour, tour_model.TourStep.get(data_dict["id"]))
+
+    tour_step.title = data_dict["title"]
+    tour_step.element = data_dict["element"]
+    tour_step.intro = data_dict["intro"]
+    tour_step.position = data_dict["position"]
+
+    model.Session.commit()
+
+    return tour_step.dictize(context)
+
+
+@validate(schema.tour_step_remove)
+def tour_step_remove(context, data_dict):
+    study_request = cast(tour_model.Tour, tour_model.TourStep.get(data_dict["id"]))
+
+    study_request.delete()
+    model.Session.commit()
+
+    return True

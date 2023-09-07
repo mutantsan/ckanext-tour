@@ -1,9 +1,9 @@
 {% import 'macros/form.html' as form %}
-{% from "tour/snippets/tour_image_upload.html" import image_upload %}
 
 <fieldset class="tour-step" id="step_{{ step_id }}" data-step-id="{{ step_id }}">
     <button class="remove-step btn">X</button>
 
+    {{ form.hidden("step_id", value=step.step_id or step.id) }}
     {{ form.input("step_title", label=_("Tour title"), value=step.step_title or step.title) }}
 
     {% call form.input("step_element", label=_("HTML element query"), value=step.step_element or step.element, attrs={'required': 1, 'class': 'form-control'}) %}
@@ -16,5 +16,7 @@
 
     {{ form.select('step_position', label=_('Position'), options=h.tour_get_position_options(), selected=step.step_position or step.position, error=error or {}) }}
 
-    {{ form.input('step_upload', label=_('Step image'), type='file', placeholder='', value='', error='', attrs={"accept": "image/*", "class": "form-control"}) }}
+    {% from "tour/snippets/tour_image_upload.html" import image_upload %}
+    {{ image_upload(step) }}
+  {#}  {{ form.input('step_upload', label=_('Step image'), type='file', placeholder='', value='', error='', attrs={"accept": "image/*", "class": "form-control"}) }} {#}
 </fieldset>
