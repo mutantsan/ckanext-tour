@@ -8,7 +8,7 @@
 {% endblock breadcrumb_content %}
 
 {% block ap_content %}
-    <form action="{{ h.url_for('tour.edit', tour_id=tour.id) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ h.url_for('tour.edit', tour_id=tour.id) }}" method="POST" enctype="multipart/form-data" novalidate>
         {% call form.input("title", label=_("Tour title"), value=tour.title, attrs={'required': 1, 'class': 'form-control'}) %}
             {{ form.info(_("A tour title to explain what is it for")) }}
         {% endcall %}
