@@ -1,7 +1,5 @@
-from turtle import position
-import pytest
-
 import ckan.plugins.toolkit as tk
+import pytest
 from ckan.tests.helpers import call_action
 
 import ckanext.tour.model as tour_model
@@ -60,9 +58,7 @@ class TestTourStepCreate:
                 tour_id=tour["id"], image=[tour_image_data(), tour_image_data()]
             )
 
-    def test_missing_element(
-        self, tour_factory, tour_step_factory, tour_image_data
-    ):
+    def test_missing_element(self, tour_factory, tour_step_factory, tour_image_data):
         tour = tour_factory(steps=[])
 
         with pytest.raises(tk.ValidationError, match="Missing value"):

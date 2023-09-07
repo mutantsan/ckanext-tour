@@ -1,7 +1,6 @@
 from io import BytesIO
 
 import factory
-
 from ckan.tests import factories
 
 from ckanext.tour import model as tour_model

@@ -4,7 +4,7 @@ from typing import Any, Dict
 
 from ckan.logic.schema import validator_args
 
-from ckanext.tour.model import TourStep, Tour
+from ckanext.tour.model import Tour, TourStep
 
 Schema = Dict[str, Any]
 

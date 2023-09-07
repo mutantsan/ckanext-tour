@@ -4,13 +4,12 @@ import logging
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import Column, DateTime, ForeignKey, Text
-from sqlalchemy.orm import Query, relationship
-from typing_extensions import Self
-
 from ckan import model
 from ckan.model.types import make_uuid
 from ckan.plugins import toolkit as tk
+from sqlalchemy import Column, DateTime, ForeignKey, Text
+from sqlalchemy.orm import Query, relationship
+from typing_extensions import Self
 
 from ckanext.tour.exception import TourStepFileError
 

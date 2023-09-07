@@ -1,11 +1,10 @@
 from io import BytesIO
 
 import pytest
-from faker import Faker
-from pytest_factoryboy import register
-
 from ckan.lib import uploader
 from ckan.tests import factories
+from faker import Faker
+from pytest_factoryboy import register
 
 import ckanext.tour.tests.factories as tour_factories
 from ckanext.tour.tests.helpers import CSV_DATA, FakeFileStorage
