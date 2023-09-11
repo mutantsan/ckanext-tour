@@ -1,21 +1,40 @@
 {% import 'macros/form.html' as form %}
 {% from "tour/snippets/tour_image_upload.html" import image_upload %}
 
-<fieldset class="tour-step" id="step_{{ step_id }}" data-step-id="{{ step_id }}">
-    <button class="remove-step btn">X</button>
+{% set step_id = step.step_id or step.id %}
 
-    {{ form.hidden("step_id", value=step.step_id or step.id) }}
-    {{ form.input("step_title", label=_("Tour title"), value=step.step_title or step.title) }}
+<div class="accordion tour-accordion" id="step-{{ step_id }}">
+    <div class="accordion-item">
+        <h3 class="accordion-header" id="headingOne">
+            <div class="accordion-header--text">
+                Step <span class="step-idx">0</span>
+            </div>
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ step_id }}"
+                aria-expanded="true" aria-controls="collapse-{{ step_id }}">
+            </button>
+            <button class="remove-step btn btn-danger" data-step-id="{{ step_id }}">{{ _("Delete") }}</button>
+        </h3>
+        <div id="collapse-{{ step_id }}" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+            data-bs-parent="#step-{{ step_id }}">
+            <div class="accordion-body">
+                <fieldset class="tour-step" id="step_{{ step_id }}" data-step-id="{{ step_id }}">
+                    {{ form.hidden("step_id", value=step.step_id or step.id) }}
+                    {{ form.input("step_title", label=_("Tour title"), value=step.step_title or step.title) }}
 
-    {% call form.input("step_element", label=_("HTML element query"), value=step.step_element or step.element, attrs={'required': 1, 'class': 'form-control'}) %}
-        {{ form.info(_('Example: .dataset-list or #map')) }}
-    {% endcall %}
+                    {% call form.input("step_element", label=_("HTML element query"), value=step.step_element or step.element, attrs={'required': 1, 'class': 'form-control'}) %}
+                        {{ form.info(_('Example: .dataset-list or #map')) }}
+                    {% endcall %}
 
-    {% call form.input("step_intro", label=_("Intro"), value=step.step_intro or step.intro) %}
-        {{ form.info(_('Supports HTML')) }}
-    {% endcall %}
+                    {% call form.input("step_intro", label=_("Intro"), value=step.step_intro or step.intro) %}
+                        {{ form.info(_('Supports HTML')) }}
+                    {% endcall %}
 
-    {{ form.select('step_position', label=_('Position'), options=h.tour_get_position_options(), selected=step.step_position or step.position, error=error or {}) }}
+                    {{ form.select('step_position', label=_('Position'), options=h.tour_get_position_options(), selected=step.step_position or step.position, error=error or {}) }}
 
-    {{ image_upload(step) }}
-</fieldset>
+                    {{ image_upload(step) }}
+                </fieldset>
+            </div>
+        </div>
+    </div>
+
+</div>

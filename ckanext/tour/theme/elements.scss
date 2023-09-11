@@ -3,6 +3,9 @@
 
     .tour-steps__steps {
         margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
 
         .tour-step {
             border: 1px solid $step-border-color;
@@ -33,5 +36,25 @@
             }
         }
     }
+}
 
+.accordion.tour-accordion {
+    .accordion-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .accordion-header--text {
+            margin-right: auto;
+        }
+
+        .accordion-button {
+            width: fit-content;
+            padding: 0.5rem;
+        }
+
+        .remove-step {
+            height: 38px;
+        }
+    }
 }

@@ -3,6 +3,9 @@
 }
 .tour-steps .tour-steps__steps {
   margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 .tour-steps .tour-steps__steps .tour-step {
   border: 1px solid #e3e3e3;
@@ -24,6 +27,22 @@
 }
 .tour-steps .tour-steps__steps .tour-step:last-of-type {
   margin-bottom: 0;
+}
+
+.accordion.tour-accordion .accordion-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.accordion.tour-accordion .accordion-header .accordion-header--text {
+  margin-right: auto;
+}
+.accordion.tour-accordion .accordion-header .accordion-button {
+  width: fit-content;
+  padding: 0.5rem;
+}
+.accordion.tour-accordion .accordion-header .remove-step {
+  height: 38px;
 }
 
 /*# sourceMappingURL=style.css.map */

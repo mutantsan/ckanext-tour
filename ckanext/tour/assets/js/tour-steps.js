@@ -40,9 +40,7 @@ ckan.module("tour-steps", function ($) {
         _onRemoveStep: function (e) {
             e.preventDefault();
 
-            var stepId = $(e.target).closest(".tour-step").data("stepId");
-
-            $(`#step_${stepId}`).remove();
+            $(e.target).closest(".tour-accordion").remove();
 
             this._toggleRemoveBtns();
             this._updateLastStepId();
