@@ -89,13 +89,12 @@ def tour_step_schema(
 
 @validator_args
 def tour_step_update(
-    ignore_empty,
-    unicode_safe,
-    tour_tour_step_exist,
+    ignore_empty, unicode_safe, tour_tour_step_exist, default, boolean_validator
 ) -> Schema:
     step_schema = tour_step_schema()
     step_schema.pop("tour_id")
     step_schema["id"] = [ignore_empty, unicode_safe, tour_tour_step_exist]
+    step_schema["clear"] = [default("false"), boolean_validator]
 
     return step_schema
 
@@ -131,3 +130,10 @@ def tour_step_remove(not_empty, unicode_safe, tour_tour_step_exist) -> Schema:
 @validator_args
 def tour_step_image_update_schema() -> Schema:
     return tour_step_image_schema()
+
+
+@validator_args
+def tour_step_image_remove_schema(
+    not_empty, unicode_safe, tour_tour_step_image_exist
+) -> Schema:
+    return {"id": [tour_tour_step_image_exist]}

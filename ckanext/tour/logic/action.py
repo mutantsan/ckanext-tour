@@ -149,14 +149,18 @@ def tour_step_update(context, data_dict):
     tour_step.intro = data_dict["intro"]
     tour_step.position = data_dict["position"]
 
-    if data_dict.get("image"):
+    if data_dict["clear"] and tour_step.image:
+        tk.get_action("tour_step_image_remove")(
+            {"ignore_auth": True}, {"id": tour_step.image.id}
+        )
+    elif data_dict.get("image"):
         data_dict["image"][0]["tour_step_id"] = tour_step.id
-        action = "tour_step_image_update" if tour_step.image else "tour_step_image_upload"
+        action = (
+            "tour_step_image_update" if tour_step.image else "tour_step_image_upload"
+        )
 
         try:
-            tk.get_action(action)(
-                {"ignore_auth": True}, data_dict["image"][0]
-            )
+            tk.get_action(action)({"ignore_auth": True}, data_dict["image"][0])
         except TourStepFileError as e:
             raise tk.ValidationError(f"Error while uploading step image: {e}")
 
@@ -167,9 +171,9 @@ def tour_step_update(context, data_dict):
 
 @validate(schema.tour_step_remove)
 def tour_step_remove(context, data_dict):
-    study_request = cast(tour_model.Tour, tour_model.TourStep.get(data_dict["id"]))
+    tour_step = cast(tour_model.TourStep, tour_model.TourStep.get(data_dict["id"]))
 
-    study_request.delete()
+    tour_step.delete()
     model.Session.commit()
 
     return True
@@ -248,3 +252,15 @@ def tour_step_image_update(context, data_dict):
     model.Session.commit()
 
     return tour_step_image.dictize(context)
+
+
+@validate(schema.tour_step_image_remove_schema)
+def tour_step_image_remove(context, data_dict):
+    tour_step_image = cast(
+        tour_model.TourStepImage, tour_model.TourStepImage.get(data_dict["id"])
+    )
+
+    tour_step_image.delete(with_file=bool(tour_step_image.file_id))
+    model.Session.commit()
+
+    return True

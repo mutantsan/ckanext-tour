@@ -167,8 +167,8 @@ class TourStepImage(tk.BaseModel):
         return tour_step_image
 
     @classmethod
-    def get(cls, file_id: str) -> Self | None:
-        query: Query = model.Session.query(cls).filter(cls.file_id == file_id)
+    def get(cls, image_id: str) -> Self | None:
+        query: Query = model.Session.query(cls).filter(cls.id == image_id)
 
         return query.one_or_none()
 
@@ -189,14 +189,15 @@ class TourStepImage(tk.BaseModel):
             "url": uploaded_file["url"] if uploaded_file else self.url,
         }
 
-    def delete(self) -> None:
+    def delete(self, with_file: bool = False) -> None:
         """Drop step image and related file from file system"""
-        try:
-            tk.get_action("files_file_delete")(
-                {"ignore_auth": True}, {"id": self.file_id}
-            )
-        except tk.ObjectNotFound:
-            raise TourStepFileError("Related file not found.")
+        if with_file:
+            try:
+                tk.get_action("files_file_delete")(
+                    {"ignore_auth": True}, {"id": self.file_id}
+                )
+            except tk.ObjectNotFound:
+                raise TourStepFileError("Related file not found.")
 
         model.Session().autoflush = False
         model.Session.delete(self)

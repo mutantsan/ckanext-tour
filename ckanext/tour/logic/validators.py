@@ -27,18 +27,18 @@ def tour_tour_step_exist(v: str, context) -> Any:
     result = tour_model.TourStep.get(v)
 
     if not result:
-        raise tk.Invalid(f"The tour with an id {v} doesn't exist.")
+        raise tk.Invalid(f"The tour step with an id {v} doesn't exist.")
 
     return v
 
 
 def tour_tour_step_image_exist(v: str, context) -> Any:
-    """Ensures that the tour step image exists for a specific tour step"""
+    """Ensures that the tour step image with a given id exists"""
 
-    result = tour_model.TourStepImage.get_by_step(v)
+    result = tour_model.TourStepImage.get(v)
 
     if not result:
-        raise tk.Invalid(f"The tour image for tour step {v} doesn't exists.")
+        raise tk.Invalid(f"The tour step image with an id {v} doesn't exist.")
 
     return v
 

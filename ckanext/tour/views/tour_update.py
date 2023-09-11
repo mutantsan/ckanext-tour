@@ -57,6 +57,7 @@ class TourUpdateView(MethodView):
             "step_element",
             "step_intro",
             "step_position",
+            "step_clear",
         )
 
         steps = {}
