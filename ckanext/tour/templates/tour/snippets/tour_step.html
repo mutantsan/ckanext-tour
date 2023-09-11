@@ -9,12 +9,12 @@
             <div class="accordion-header--text">
                 Step <span class="step-idx">0</span>
             </div>
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ step_id }}"
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ step_id }}"
                 aria-expanded="true" aria-controls="collapse-{{ step_id }}">
             </button>
             <button class="remove-step btn btn-danger" data-step-id="{{ step_id }}">{{ _("Delete") }}</button>
         </h3>
-        <div id="collapse-{{ step_id }}" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+        <div id="collapse-{{ step_id }}" class="accordion-collapse collapse" aria-labelledby="headingOne"
             data-bs-parent="#step-{{ step_id }}">
             <div class="accordion-body">
                 <fieldset class="tour-step" id="step_{{ step_id }}" data-step-id="{{ step_id }}">
