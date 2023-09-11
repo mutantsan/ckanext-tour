@@ -11,11 +11,11 @@ def tour_remove(context, data_dict):
 
 
 def tour_list(context, data_dict):
-    return {"success": False}
+    return {"success": True}
 
 
 def tour_show(context, data_dict):
-    return {"success": False}
+    return {"success": True}
 
 
 def tour_step_update(context, data_dict):

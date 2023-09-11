@@ -45,9 +45,6 @@ class TourAddView(MethodView):
             "step_element",
             "step_intro",
             "step_position",
-            # "image_url",
-            # "image_upload",
-            # "clear_upload",
         )
 
         steps = {}
@@ -56,12 +53,15 @@ class TourAddView(MethodView):
             _, field = field_name.split("_")
 
             for idx, value in enumerate(tk.request.form.getlist(field_name), start=1):
-                # if field in ("url", "upload"):
-                #     steps[idx].setdefault("image", [{}])
-                #     steps[idx]["image"][0].update({field: value or None})
-                # else:
                 steps.setdefault(idx, {})
                 steps[idx][field] = value
+
+        for idx, url in enumerate(tk.request.form.getlist("step_url"), start=1):
+            if not url:
+                continue
+
+            steps[idx].setdefault("image", [{}])
+            steps[idx]["image"][0].update({"url": url or None})
 
         for idx, file in enumerate(tk.request.files.getlist("step_upload"), start=1):
             if not file:

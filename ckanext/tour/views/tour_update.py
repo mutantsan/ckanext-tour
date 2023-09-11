@@ -27,8 +27,6 @@ class TourUpdateView(MethodView):
             return tk.render("tour/tour_404.html")
 
         data_dict = self._prepare_payload(tour_id)
-        import ipdb; ipdb.set_trace()
-        data_dict["id"] = tour_id
 
         try:
             tk.get_action("tour_update")(self._build_context(),data_dict)
@@ -59,29 +57,33 @@ class TourUpdateView(MethodView):
             "step_element",
             "step_intro",
             "step_position",
-            "image_url",
-            # "image_upload",
-            "clear_upload",
         )
+
         steps = {}
 
         for field_name in step_fields:
             _, field = field_name.split("_")
 
             for idx, value in enumerate(tk.request.form.getlist(field_name), start=1):
-                # if field in ("url", "upload"):
-                #     steps[idx].setdefault("image", [{}])
-                #     steps[idx]["image"][0].update({field: value or None})
-                # else:
                 steps.setdefault(idx, {})
                 steps[idx][field] = value
 
-        for idx, file in enumerate(tk.request.files.getlist("image_upload"), start=1):
-            if not file:
+        for idx, url in enumerate(tk.request.form.getlist("step_url"), start=1):
+            if not url:
                 continue
 
             steps[idx].setdefault("image", [{}])
+            steps[idx]["image"][0].update({"url": url or None})
+
+        for idx, file in enumerate(tk.request.files.getlist("step_upload"), start=1):
+            if not file:
+                continue
+
+            # remove url from payload, because we are uploading a file instead
+            steps[idx]["image"][0].pop("url", None)
+            steps[idx].setdefault("image", [{}])
             steps[idx]["image"][0].update({"upload": file or None})
+
 
         return {
             "id": tour_id,

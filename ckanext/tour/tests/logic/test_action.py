@@ -166,3 +166,51 @@ class TestTourList:
     def test_filter_by_wrong_state(self):
         with pytest.raises(tk.ValidationError, match="Value must be one of"):
             call_action("tour_list", state="deleted")
+
+
+@pytest.mark.usefixtures("with_plugins", "clean_db", "mock_storage")
+class TestStepImageCreate:
+    """Each step could have 1 image. It could be created either from uploaded file,
+    or by URL"""
+
+    def test_create_from_invalid_url(self, tour_step, tour_step_image_factory):
+        """You should be able to use only url-like string for a URL field"""
+        with pytest.raises(tk.ValidationError, match="Please provide a valid URL"):
+            tour_step_image_factory(
+                tour_step_id=tour_step["id"], url="xxx", upload=None
+            )
+
+    def test_create_from_valid_url(self, tour_step, tour_step_image_factory):
+        """You should be able to create a step image entity from a URL.
+        We are not checking that this URL somehow related to an image, it's up
+        to user"""
+        image_from_url = tour_step_image_factory(
+            tour_step_id=tour_step["id"], url="https://image.url", upload=None
+        )
+
+        assert not image_from_url["file_id"]
+        assert image_from_url["url"] == "https://image.url"
+
+    def test_create_from_file(self, tour_step, tour_step_image_factory):
+        """You should be able to create a step image entity from a real file.
+        The factory has a mock file object by default."""
+        image_from_file = tour_step_image_factory(tour_step_id=tour_step["id"])
+
+        assert image_from_file["file_id"]
+        assert image_from_file["url"]
+
+    def test_create_from_nothing(self, tour_step, tour_step_image_factory):
+        """You have to provide at least 1 source of image"""
+        with pytest.raises(
+            tk.ValidationError, match="You have to provide either file or URL"
+        ):
+            tour_step_image_factory(tour_step_id=tour_step["id"], url=None, upload=None)
+
+    def test_create_from_both(self, tour_step, tour_step_image_factory):
+        """Obviously, you should either use URL of file, not both at the same time"""
+        with pytest.raises(
+            tk.ValidationError, match="You cannot use a file and a URL at the same time"
+        ):
+            tour_step_image_factory(
+                tour_step_id=tour_step["id"], url="https://image.url"
+            )

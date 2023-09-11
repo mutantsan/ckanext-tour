@@ -61,7 +61,8 @@ def upgrade():
     op.create_table(
         "tour_step_image",
         sa.Column("id", sa.Text, primary_key=True, unique=True),
-        sa.Column("file_id", sa.Text, unique=True),
+        sa.Column("file_id", sa.Text, unique=True, nullable=True),
+        sa.Column("url", sa.Text, nullable=True),
         sa.Column(
             "uploaded_at",
             sa.DateTime,

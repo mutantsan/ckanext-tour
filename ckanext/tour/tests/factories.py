@@ -12,7 +12,7 @@ class TourStepImageFactory(factories.CKANFactory):
         model = tour_model.TourStepImage
         action = "tour_step_image_upload"
 
-    tour_step_id = factory.LazyFunction(lambda: TourStepFactory().id)
+    tour_step_id = factory.LazyFunction(lambda: TourStepFactory()["id"])
     url = None
     upload = factory.LazyAttribute(
         lambda _: FakeFileStorage(BytesIO(CSV_DATA), "step.jpeg")
@@ -29,7 +29,7 @@ class TourStepFactory(factories.CKANFactory):
     element = ".dataset-list"
     intro = factory.Faker("sentence")
     position = tour_model.TourStep.Position.bottom
-    tour_id = factory.LazyFunction(lambda: TourFactory().id)
+    tour_id = factory.LazyFunction(lambda: TourFactory()["id"])
     image = factory.LazyAttribute(
         lambda self: [vars(TourStepImageFactory.stub(tour_step_id=self.id))]
     )

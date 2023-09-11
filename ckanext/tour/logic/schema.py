@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any, Dict
+from ckan.lib.navl.validators import ignore_empty
 
 from ckan.logic.schema import validator_args
 
@@ -50,6 +51,10 @@ def tour_update(
     tour_schema = tour_create()
     tour_schema["id"] = [not_empty, unicode_safe, tour_tour_exist]
     tour_schema["steps"] = tour_step_update()
+
+    # we shouldn't be able to change an author_id
+    tour_schema.pop("author_id")
+
     return tour_schema
 
 
@@ -76,7 +81,6 @@ def tour_step_schema(
                 ]
             ),
         ],
-        "url": [ignore_missing, unicode_safe],
         "image": image_schema,
         "tour_id": [not_empty, unicode_safe, tour_tour_exist],
         "__extras": [ignore],
@@ -85,22 +89,24 @@ def tour_step_schema(
 
 @validator_args
 def tour_step_update(
-    not_empty,
+    ignore_empty,
     unicode_safe,
     tour_tour_step_exist,
 ) -> Schema:
     step_schema = tour_step_schema()
     step_schema.pop("tour_id")
-    step_schema["id"] = [not_empty, unicode_safe, tour_tour_step_exist]
+    step_schema["id"] = [ignore_empty, unicode_safe, tour_tour_step_exist]
 
     return step_schema
 
 
 @validator_args
-def tour_step_image_schema(not_missing, unicode_safe, tour_tour_step_exist) -> Schema:
+def tour_step_image_schema(
+    ignore_empty, not_missing, unicode_safe, tour_tour_step_exist, tour_url_validator
+) -> Schema:
     return {
-        "name": [not_missing, unicode_safe],
-        "upload": [not_missing],
+        "upload": [ignore_empty],
+        "url": [ignore_empty, unicode_safe, tour_url_validator],
         "tour_step_id": [not_missing, unicode_safe, tour_tour_step_exist],
     }
 
@@ -120,3 +126,8 @@ def tour_remove(not_empty, unicode_safe, tour_tour_exist) -> Schema:
 @validator_args
 def tour_step_remove(not_empty, unicode_safe, tour_tour_step_exist) -> Schema:
     return {"id": [not_empty, unicode_safe, tour_tour_step_exist]}
+
+
+@validator_args
+def tour_step_image_update_schema() -> Schema:
+    return tour_step_image_schema()

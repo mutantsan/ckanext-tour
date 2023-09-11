@@ -149,7 +149,8 @@ class TourStepImage(tk.BaseModel):
 
     id = Column(Text, primary_key=True, default=make_uuid)
 
-    file_id = Column(Text, unique=True)
+    file_id = Column(Text, unique=True, nullable=True)
+    url = Column(Text, nullable=True)
     uploaded_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     tour_step_id = Column(Text, ForeignKey("tour_step.id", ondelete="CASCADE"))
 
@@ -178,14 +179,14 @@ class TourStepImage(tk.BaseModel):
         return query.one_or_none()  # type: ignore
 
     def dictize(self, context):
-        uploaded_file = self.get_file_data(self.file_id)
+        uploaded_file = self.get_file_data(self.file_id) if self.file_id else None
 
         return {
             "id": self.id,
             "file_id": self.file_id,
             "tour_step_id": self.tour_step_id,
             "uploaded_at": self.uploaded_at.isoformat(),
-            "url": uploaded_file["url"],
+            "url": uploaded_file["url"] if uploaded_file else self.url,
         }
 
     def delete(self) -> None:

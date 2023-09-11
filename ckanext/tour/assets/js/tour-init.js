@@ -66,8 +66,8 @@ this.ckan.module('tour-init', function (jQuery) {
 
             // if (shouldStart) {
             //     // for development
-            //     // localStorage.setItem('intro-' + introData.id, 1);
-            //     intro.start();
+            //     localStorage.setItem('intro-' + introData.id, 1);
+            //     this.intro.start();
             // }
         },
 
