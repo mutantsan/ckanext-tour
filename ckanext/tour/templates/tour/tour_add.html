@@ -20,6 +20,12 @@
             {{ form.info(_('Optional. A path to a page, where tour will be applied. Note, that a page tour will be triggered automatically.', classes=['info-help-tight'])) }}
         {% endcall %}
 
+
+        <div class="form-actions js-form-wrapper form-wrapper">
+            <button class="btn btn-primary" type="submit">{{ _("Create tour") }}</button>
+            <button class="btn btn-black btn-collapse-steps">{{ _("Collapse all steps") }}</button>
+        </div>
+
         <h3>{{ _("Tour steps:") }}</h3>
 
         {#} it's a temporary solution {#}
@@ -54,10 +60,6 @@
                     <i class="fa fa-plus"></i>
                 </button>
             </div>
-        </div>
-
-        <div class="form-actions js-form-wrapper form-wrapper">
-            <button class="btn btn-primary" type="submit">{{ _("Create tour") }}</button>
         </div>
     </form>
 {% endblock ap_content %}

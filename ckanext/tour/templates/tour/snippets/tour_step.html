@@ -5,7 +5,7 @@
 
 <div class="accordion tour-accordion" id="step-{{ step_id }}">
     <div class="accordion-item">
-        <h3 class="accordion-header" id="headingOne">
+        <h3 class="accordion-header" id="step-header-{{ step_id }}">
             <div class="accordion-header--text">
                <span class="step-number">{{ step_index or 0 }}</span> {{ _("Step") }}
             </div>
@@ -17,7 +17,7 @@
             </button>
             <button class="remove-step btn btn-danger" data-step-id="{{ step_id }}">{{ _("Delete") }}</button>
         </h3>
-        <div id="collapse-{{ step_id }}" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+        <div id="collapse-{{ step_id }}" class="accordion-collapse collapse show" aria-labelledby="step-header-{{ step_id }}"
             data-bs-parent="#step-{{ step_id }}">
             <div class="accordion-body">
                 <fieldset class="tour-step" id="step_{{ step_id }}" data-step-id="{{ step_id }}">

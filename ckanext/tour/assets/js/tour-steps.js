@@ -13,6 +13,7 @@ ckan.module("tour-steps", function ($) {
             // add event listeners
             $(document).on('click', '.add-step', this._onAddStep);
             $(document).on('click', '.remove-step', this._onRemoveStep);
+            $(document).on('click', '.btn-collapse-steps', this._onCollapseAllSteps);
 
             // HTMX events
             document.body.addEventListener('htmx:afterSwap', function (e) {
@@ -90,6 +91,11 @@ ckan.module("tour-steps", function ($) {
         _updateStepIndexes: function (idx, step) {
             $(step).find(".step-number").text(idx);
             $(step).find("input[name='step_index']").val(idx);
+        },
+
+        _onCollapseAllSteps: function (e) {
+            e.preventDefault();
+            $(".tour-steps__steps .accordion-collapse").collapse("hide");
         }
     };
 });
