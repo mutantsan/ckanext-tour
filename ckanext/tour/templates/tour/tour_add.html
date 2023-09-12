@@ -28,7 +28,7 @@
 
             <div class="tour-steps__steps">
                 {% for step in data.steps %}
-                    {% snippet 'tour/snippets/tour_step.html', step=step %}
+                    {% snippet 'tour/snippets/tour_step.html', step=step, step_index=loop.index %}
                 {% else %}
                     {% snippet 'tour/snippets/tour_step.html', step={} %}
                 {% endfor %}
@@ -58,5 +58,6 @@
 {% block scripts %}
     {{ super() }}
 
+    {% asset 'tour/tour-draggable' %}
     {% asset 'tour/tour-htmx' %}
 {% endblock %}

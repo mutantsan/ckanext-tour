@@ -21,3 +21,11 @@ tour-css:
   contents:
     - css/vendor/introjs.min.css
     - css/style.css
+
+tour-draggable:
+  filter: cssrewrite
+  output: ckanext-tour/%(version)s-tour-draggable.css
+  contents:
+    - js/vendor/draggable/plugins.min.js
+    - js/vendor/draggable/sort-animation.min.js
+    - js/vendor/draggable/sortable.min.js

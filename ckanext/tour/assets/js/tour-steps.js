@@ -20,12 +20,12 @@ ckan.module("tour-steps", function ($) {
 
                 if (requestPath === "/admin_panel/config/tour/add_step") {
                     self._toggleRemoveBtns();
-                    self._updateLastStepId();
+                    self._updateStepsIndexes();
                 }
             });
 
             this._toggleRemoveBtns();
-            this._updateLastStepId();
+            this._updateStepsIndexes();
 
             new Sortable.default(document.querySelectorAll('.tour-steps__steps'), {
                 draggable: '.tour-accordion',
@@ -35,11 +35,7 @@ ckan.module("tour-steps", function ($) {
                     easingFunction: 'ease-in-out',
                 },
                 plugins: [Plugins.SortAnimation]
-            })
-                .on('drag:start', () => console.log('drag:start'))
-                .on('drag:move', () => console.log('drag:move'))
-                .on('drag:stop', () => console.log('drag:stop'))
-                .on("sortable:stop", () => console.log("sortable:stop"))
+            }).on('drag:stopped', () => this._updateStepsIndexes())
 
         },
 
@@ -60,7 +56,7 @@ ckan.module("tour-steps", function ($) {
             $(e.target).closest(".tour-accordion").hide('slow', function () {
                 this.remove();
                 self._toggleRemoveBtns();
-                self._updateLastStepId();
+                self._updateStepsIndexes();
             });
         },
 
@@ -74,14 +70,27 @@ ckan.module("tour-steps", function ($) {
         },
 
         /**
-         * Update the stepId we are sending to a server when adding a new step
+         * Update the steps indexes on sorting or adding a new one
          */
-        _updateLastStepId: function () {
-            var steps = $(".tour-steps__steps .tour-step");
+        _updateStepsIndexes: function () {
+            var steps = $(".tour-steps__steps .tour-accordion")
+                .not(".draggable-source--is-dragging")
+                .not(".draggable--original");
+            console.log(steps.length);
 
-            this.addStepBtn.attr("hx-vals", JSON.stringify({
-                stepId: steps.last().data("step-id") + 1
-            }))
+            steps.each((idx, step) => this._updateStepIndexes(idx + 1, step));
+        },
+
+        /**
+         * Update a specific step indexes
+         *  - update accordion header
+         *  - update a hidden field we are sending to the server
+         *
+         * @param {HTMLElement} step
+         */
+        _updateStepIndexes: function (idx, step) {
+            $(step).find(".step-number").text(idx);
+            $(step).find("input[name='step_index']").val(idx);
         }
     };
 });

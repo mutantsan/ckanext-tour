@@ -8,10 +8,6 @@
   gap: 12px;
 }
 .tour-steps .tour-steps__steps .tour-step {
-  border: 1px solid #e3e3e3;
-  border-radius: 8px;
-  padding: 8px;
-  margin-bottom: 8px;
   position: relative;
 }
 .tour-steps .tour-steps__steps .tour-step .form-group {
@@ -32,6 +28,9 @@
 .accordion.tour-accordion {
   width: 100%;
 }
+.accordion.tour-accordion.draggable-source--is-dragging {
+  opacity: 0.5;
+}
 .accordion.tour-accordion .accordion-header {
   display: flex;
   align-items: center;
@@ -39,6 +38,12 @@
 }
 .accordion.tour-accordion .accordion-header .accordion-header--text {
   margin-right: auto;
+}
+.accordion.tour-accordion .accordion-header .accordion-header--text .step-number {
+  border: 1px solid black;
+  color: black;
+  padding: 5px 11px;
+  border-radius: 50%;
 }
 .accordion.tour-accordion .accordion-header .dragger {
   height: 38px;
