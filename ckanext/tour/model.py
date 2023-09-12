@@ -67,7 +67,10 @@ class Tour(tk.BaseModel):
 
     @property
     def steps(self) -> list[TourStep]:
-        return [request_study for request_study in TourStep.get_by_tour(self.id)]
+        return sorted(
+            [request_study for request_study in TourStep.get_by_tour(self.id)],
+            key=lambda step: step.index,
+        )
 
     @classmethod
     def get(cls, tour_id: str) -> Self | None:
