@@ -39,6 +39,8 @@
 }
 
 .accordion.tour-accordion {
+    width: 100%;
+
     .accordion-header {
         display: flex;
         align-items: center;
@@ -46,6 +48,16 @@
 
         .accordion-header--text {
             margin-right: auto;
+        }
+
+        .dragger {
+            height: 38px;
+            width: 38px;
+            display: flex;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
         }
 
         .accordion-button {

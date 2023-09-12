@@ -26,6 +26,21 @@ ckan.module("tour-steps", function ($) {
 
             this._toggleRemoveBtns();
             this._updateLastStepId();
+
+            new Sortable.default(document.querySelectorAll('.tour-steps__steps'), {
+                draggable: '.tour-accordion',
+                handle: ".dragger",
+                sortAnimation: {
+                    duration: 200,
+                    easingFunction: 'ease-in-out',
+                },
+                plugins: [Plugins.SortAnimation]
+            })
+                .on('drag:start', () => console.log('drag:start'))
+                .on('drag:move', () => console.log('drag:move'))
+                .on('drag:stop', () => console.log('drag:stop'))
+                .on("sortable:stop", () => console.log("sortable:stop"))
+
         },
 
         _onAddStep: function (e) {
@@ -40,10 +55,13 @@ ckan.module("tour-steps", function ($) {
         _onRemoveStep: function (e) {
             e.preventDefault();
 
-            $(e.target).closest(".tour-accordion").remove();
+            var self = this;
 
-            this._toggleRemoveBtns();
-            this._updateLastStepId();
+            $(e.target).closest(".tour-accordion").hide('slow', function () {
+                this.remove();
+                self._toggleRemoveBtns();
+                self._updateLastStepId();
+            });
         },
 
         /**
@@ -51,7 +69,7 @@ ckan.module("tour-steps", function ($) {
          * only 1 left.
          */
         _toggleRemoveBtns: function () {
-            var steps = $(".tour-steps__steps .tour-step");
+            var steps = $(".tour-steps__steps .tour-accordion");
             $(".remove-step").toggleClass("disabled", steps.length == 1)
         },
 

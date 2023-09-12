@@ -7,8 +7,11 @@
     <div class="accordion-item">
         <h3 class="accordion-header" id="headingOne">
             <div class="accordion-header--text">
-                Step <span class="step-idx">0</span>
+                Step <span class="step-idx">{{ step_id }}</span>
             </div>
+            <span class="dragger">
+                {% snippet 'snippets/svg/drag.svg' %}
+            </span>
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ step_id }}"
                 aria-expanded="true" aria-controls="collapse-{{ step_id }}">
             </button>
