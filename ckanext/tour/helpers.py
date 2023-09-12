@@ -1,3 +1,5 @@
+import uuid
+
 from ckanext.tour.model import TourStep
 
 
@@ -11,3 +13,6 @@ def tour_get_position_options():
             TourStep.Position.left,
         )
     ]
+
+def tour_random_step_id() -> str:
+    return str(uuid.uuid4())

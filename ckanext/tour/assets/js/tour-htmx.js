@@ -5,7 +5,7 @@ ckan.module("tour-htmx", function ($) {
     return {
         initialize: function () {
             $.proxyAll(this, /_on/);
-            console.log('loaded');
+
             document.addEventListener('htmx:beforeRequest', this._onHTMXbeforeRequest);
             document.addEventListener('htmx:afterSettle', this._onHTMXafterSettle);
             document.addEventListener('htmx:pushedIntoHistory', this._onHTMXpushedIntoHistory);

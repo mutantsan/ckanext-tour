@@ -76,7 +76,6 @@ ckan.module("tour-steps", function ($) {
             var steps = $(".tour-steps__steps .tour-accordion")
                 .not(".draggable-source--is-dragging")
                 .not(".draggable--original");
-            console.log(steps.length);
 
             steps.each((idx, step) => this._updateStepIndexes(idx + 1, step));
         },

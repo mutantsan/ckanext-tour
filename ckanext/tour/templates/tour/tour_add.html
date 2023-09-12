@@ -22,6 +22,13 @@
 
         <h3>{{ _("Tour steps:") }}</h3>
 
+        {#} it's a temporary solution {#}
+        {% if errors %}
+            <div class="error-block mb-3 steps-errors">
+                {{ errors }}
+            </div>
+        {% endif %}
+
         <div
             class="tour-steps"
             data-module="tour-steps tour-htmx">

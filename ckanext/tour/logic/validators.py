@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from typing import Any
 import string
+from typing import Any
 from urllib.parse import urlparse
 
 import ckan.plugins.toolkit as tk

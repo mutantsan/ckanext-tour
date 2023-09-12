@@ -7,7 +7,7 @@ from typing import Any
 from ckan import model
 from ckan.model.types import make_uuid
 from ckan.plugins import toolkit as tk
-from sqlalchemy import Column, DateTime, ForeignKey, Text
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, Text
 from sqlalchemy.orm import Query, relationship
 from typing_extensions import Self
 
@@ -93,6 +93,7 @@ class TourStep(tk.BaseModel):
 
     id = Column(Text, primary_key=True, default=make_uuid)
 
+    index = Column(Integer)
     title = Column(Text, nullable=True)
     element = Column(Text)
     intro = Column(Text, nullable=True)
@@ -135,6 +136,7 @@ class TourStep(tk.BaseModel):
     def dictize(self, context):
         return {
             "id": self.id,
+            "index": self.index,
             "title": self.title,
             "element": self.element,
             "intro": self.intro,

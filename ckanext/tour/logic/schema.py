@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from typing import Any, Dict
-from ckan.lib.navl.validators import ignore_empty
 
+from ckan.lib.navl.validators import ignore_empty
 from ckan.logic.schema import validator_args
 
 from ckanext.tour.model import Tour, TourStep
@@ -89,12 +89,18 @@ def tour_step_schema(
 
 @validator_args
 def tour_step_update(
-    ignore_empty, unicode_safe, tour_tour_step_exist, default, boolean_validator
+    ignore_empty,
+    unicode_safe,
+    tour_tour_step_exist,
+    default,
+    boolean_validator,
+    int_validator,
 ) -> Schema:
     step_schema = tour_step_schema()
     step_schema.pop("tour_id")
     step_schema["id"] = [ignore_empty, unicode_safe, tour_tour_step_exist]
     step_schema["clear"] = [default("false"), boolean_validator]
+    step_schema["index"] = [ignore_empty, int_validator]
 
     return step_schema
 

@@ -36,6 +36,7 @@ class TestTourStepCreate:
         tour = call_action("tour_show", id=tour["id"])
 
         assert tour["steps"][0]["id"] == tour_step["id"]
+        assert tour["steps"][0]["index"] == 1
 
     def test_wrong_position(self, tour_factory, tour_step_factory):
         tour = tour_factory(steps=[])

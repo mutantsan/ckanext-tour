@@ -10,6 +10,7 @@ from ckan.logic import validate
 import ckanext.tour.logic.schema as schema
 import ckanext.tour.model as tour_model
 from ckanext.tour.exception import TourStepFileError
+from ckanext.tour.model import Tour, TourStep, TourStepImage
 
 
 @tk.side_effect_free
@@ -17,7 +18,7 @@ from ckanext.tour.exception import TourStepFileError
 def tour_show(context, data_dict):
     tk.check_access("tour_show", context, data_dict)
 
-    return tour_model.Tour.get(data_dict["id"]).dictize(context)  # type: ignore
+    return Tour.get(data_dict["id"]).dictize(context)  # type: ignore
 
 
 @tk.side_effect_free
@@ -26,12 +27,12 @@ def tour_list(context, data_dict):
     """Return a list of tours from database"""
     tk.check_access("tour_list", context, data_dict)
 
-    query = model.Session.query(tour_model.Tour)
+    query = model.Session.query(Tour)
 
     if data_dict.get("state"):
-        query = query.filter(tour_model.Tour.state == data_dict["state"])
+        query = query.filter(Tour.state == data_dict["state"])
 
-    query = query.order_by(tour_model.Tour.created_at.desc())
+    query = query.order_by(Tour.created_at.desc())
 
     return [tour.dictize(context) for tour in query.all()]
 
@@ -41,7 +42,7 @@ def tour_create(context, data_dict):
     tk.check_access("tour_create", context, data_dict)
 
     steps: list[dict[str, Any]] = data_dict.pop("steps", [])
-    tour = tour_model.Tour.create(data_dict)
+    tour = Tour.create(data_dict)
 
     for step in steps:
         step["tour_id"] = tour.id
@@ -58,7 +59,7 @@ def tour_create(context, data_dict):
 def tour_remove(context, data_dict):
     tk.check_access("tour_remove", context, data_dict)
 
-    tour = cast(tour_model.Tour, tour_model.Tour.get(data_dict["id"]))
+    tour = cast(Tour, Tour.get(data_dict["id"]))
 
     for step in tour.steps:
         step.delete()
@@ -79,7 +80,9 @@ def tour_step_create(context, data_dict):
     if len(images) > 1:
         raise tk.ValidationError({"image": "only 1 image for step allowed"})
 
-    tour_step = tour_model.TourStep.create(data_dict)
+    tour = cast(Tour, Tour.get(data_dict["tour_id"]))
+    data_dict["index"] = len(tour.steps) + 1
+    tour_step = TourStep.create(data_dict)
 
     for image in images:
         try:
@@ -92,7 +95,9 @@ def tour_step_create(context, data_dict):
                 },
             )
         except TourStepFileError as e:
-            raise tk.ValidationError(f"Error while uploading step image: {e}")
+            raise tk.ValidationError(
+                {"image": [f"Error while uploading step image: {e}"]}
+            )
 
     return tour_step.dictize(context)
 
@@ -101,7 +106,7 @@ def tour_step_create(context, data_dict):
 def tour_update(context, data_dict):
     tk.check_access("tour_update", context, data_dict)
 
-    tour = cast(tour_model.Tour, tour_model.Tour.get(data_dict["id"]))
+    tour = cast(Tour, Tour.get(data_dict["id"]))
 
     tour.title = data_dict["title"]
     tour.anchor = data_dict["anchor"]
@@ -122,19 +127,13 @@ def tour_update(context, data_dict):
     #     )
 
     for step in steps:
-        if step.get("id"):
-            tk.get_action("tour_step_update")(
-                {"ignore_auth": True},
-                step,
-            )
-        else:
-            step["tour_id"] = tour.id
+        action = "tour_step_update" if step.get("id") else "tour_step_create"
+        step["tour_id"] = tour.id
 
-            tk.get_action("tour_step_create")(
-                {"ignore_auth": True},
-                step,
-            )
-
+        try:
+            tk.get_action(action)({"ignore_auth": True}, step)
+        except tk.ValidationError as e:
+            raise tk.ValidationError(e.error_dict)
     return tour.dictize(context)
 
 
@@ -142,8 +141,9 @@ def tour_update(context, data_dict):
 def tour_step_update(context, data_dict):
     tk.check_access("tour_step_update", context, data_dict)
 
-    tour_step = cast(tour_model.TourStep, tour_model.TourStep.get(data_dict["id"]))
+    tour_step = cast(TourStep, TourStep.get(data_dict["id"]))
 
+    tour_step.index = int(data_dict.get("index")) or tour_step.index
     tour_step.title = data_dict["title"]
     tour_step.element = data_dict["element"]
     tour_step.intro = data_dict["intro"]
@@ -162,7 +162,9 @@ def tour_step_update(context, data_dict):
         try:
             tk.get_action(action)({"ignore_auth": True}, data_dict["image"][0])
         except TourStepFileError as e:
-            raise tk.ValidationError(f"Error while uploading step image: {e}")
+            raise tk.ValidationError(
+                {"image": [f"Error while uploading step image: {e}"]}
+            )
 
     model.Session.commit()
 
@@ -171,7 +173,7 @@ def tour_step_update(context, data_dict):
 
 @validate(schema.tour_step_remove)
 def tour_step_remove(context, data_dict):
-    tour_step = cast(tour_model.TourStep, tour_model.TourStep.get(data_dict["id"]))
+    tour_step = cast(TourStep, TourStep.get(data_dict["id"]))
 
     tour_step.delete()
     model.Session.commit()
@@ -192,7 +194,7 @@ def tour_step_image_upload(context, data_dict):
         )
 
     if not data_dict.get("upload"):
-        return tour_model.TourStepImage.create(
+        return TourStepImage.create(
             {"url": data_dict["url"], "tour_step_id": tour_step_id}
         ).dictize(context)
 
@@ -204,12 +206,14 @@ def tour_step_image_upload(context, data_dict):
                 "upload": data_dict["upload"],
             },
         )
-    except (tk.ValidationError, OSError) as e:
-        raise TourStepFileError(str(e))
+    except tk.ValidationError as e:
+        raise TourStepFileError(e.error_summary)
+    except OSError as e:
+        raise TourStepFileError(e)
 
     data_dict["file_id"] = result["id"]
 
-    return tour_model.TourStepImage.create(
+    return TourStepImage.create(
         {"file_id": result["id"], "tour_step_id": tour_step_id}
     ).dictize(context)
 
@@ -227,8 +231,8 @@ def tour_step_image_update(context, data_dict):
         )
 
     tour_step_image = cast(
-        tour_model.TourStepImage,
-        tour_model.TourStepImage.get_by_step(data_dict["tour_step_id"]),
+        TourStepImage,
+        TourStepImage.get_by_step(data_dict["tour_step_id"]),
     )
 
     if not data_dict.get("upload"):
@@ -256,9 +260,7 @@ def tour_step_image_update(context, data_dict):
 
 @validate(schema.tour_step_image_remove_schema)
 def tour_step_image_remove(context, data_dict):
-    tour_step_image = cast(
-        tour_model.TourStepImage, tour_model.TourStepImage.get(data_dict["id"])
-    )
+    tour_step_image = cast(TourStepImage, TourStepImage.get(data_dict["id"]))
 
     tour_step_image.delete(with_file=bool(tour_step_image.file_id))
     model.Session.commit()

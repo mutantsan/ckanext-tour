@@ -4,7 +4,7 @@
 
 {% macro image_upload(data, errors={}, field_url='step_url', field_upload='step_upload', field_clear='step_clear',
                     is_url=false, is_upload=false, placeholder=false,
-                    url_label='', upload_label='', field_name='step_url')  %}
+                    url_label='', upload_label='', field_name='step_url', scope='')  %}
     {% set placeholder = placeholder if placeholder else _('http://example.com/my-image.jpg') %}
     {% set url_label = url_label or _('Image URL')  %}
     {% set upload_label = upload_label or _('Image')  %}
@@ -21,7 +21,8 @@
             data-module-field_clear="{{ field_clear }}"
             data-module-upload_label="{{ upload_label }}"
             data-module-field_name="{{ field_name }}"
-            data-module-previous_upload="{{ 'true' if previous_upload else 'false' }}">
+            data-module-previous_upload="{{ 'true' if previous_upload else 'false' }}"
+            data-module-scope="{{ scope or '.image-upload' }}">
 
         {{ input(field_url, label=url_label, id='field-image-url', type='url', placeholder=placeholder, value=data.image.url if data else "") }}
         {{ input(field_upload, label=upload_label, id='field-image-upload', type='file', placeholder='', value='', error='', attrs={"accept": "image/*", "class": "form-control"}) }}

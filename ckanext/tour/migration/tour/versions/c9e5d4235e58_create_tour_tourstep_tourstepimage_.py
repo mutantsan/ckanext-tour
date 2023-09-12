@@ -46,6 +46,7 @@ def upgrade():
     op.create_table(
         "tour_step",
         sa.Column("id", sa.Text, primary_key=True, unique=True),
+        sa.Column("index", sa.Integer),
         sa.Column("title", sa.Text),
         sa.Column("element", sa.Text),
         sa.Column("intro", sa.Text),

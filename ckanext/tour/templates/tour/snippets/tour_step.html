@@ -1,7 +1,7 @@
 {% import 'macros/form.html' as form %}
 {% from "tour/snippets/tour_image_upload.html" import image_upload %}
 
-{% set step_id = step.step_id or step.id %}
+{% set step_id = step.step_id or step.id or h.tour_random_step_id() %}
 
 <div class="accordion tour-accordion" id="step-{{ step_id }}">
     <div class="accordion-item">
@@ -12,12 +12,12 @@
             <span class="dragger">
                 {% snippet 'snippets/svg/drag.svg' %}
             </span>
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ step_id }}"
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ step_id }}"
                 aria-expanded="true" aria-controls="collapse-{{ step_id }}">
             </button>
             <button class="remove-step btn btn-danger" data-step-id="{{ step_id }}">{{ _("Delete") }}</button>
         </h3>
-        <div id="collapse-{{ step_id }}" class="accordion-collapse collapse" aria-labelledby="headingOne"
+        <div id="collapse-{{ step_id }}" class="accordion-collapse collapse show" aria-labelledby="headingOne"
             data-bs-parent="#step-{{ step_id }}">
             <div class="accordion-body">
                 <fieldset class="tour-step" id="step_{{ step_id }}" data-step-id="{{ step_id }}">
@@ -36,7 +36,7 @@
 
                     {{ form.select('step_position', label=_('Position'), options=h.tour_get_position_options(), selected=step.step_position or step.position, error=error or {}) }}
 
-                    {{ image_upload(step) }}
+                    {{ image_upload(step, scope="#step-" + step_id) }}
                 </fieldset>
             </div>
         </div>

@@ -21,35 +21,34 @@
             {{ form.info(_('Optional. A path to a page, where tour will be applied. Note, that a page tour will be triggered automatically.', classes=['info-help-tight'])) }}
         {% endcall %}
 
+        <div class="form-actions js-form-wrapper form-wrapper">
+            <button class="btn btn-primary" type="submit">{{ _("Update tour") }}</button>
+        </div>
+
         <h3>{{ _("Tour steps:") }}</h3>
 
-        <div
-            class="tour-steps"
-            data-module="tour-steps tour-htmx">
+        {#} it's a temporary solution {#}
+        {% if errors %}
+            <div class="error-block mb-3 steps-errors">
+                {{ errors }}
+            </div>
+        {% endif %}
+
+        <div class="tour-steps" data-module="tour-steps tour-htmx">
 
             <div class="tour-steps__steps">
                 {% for step in tour.steps %}
-                    {% snippet 'tour/snippets/tour_step.html', step=step, step_index=loop.index %}
+                {% snippet 'tour/snippets/tour_step.html', step=step, step_index=loop.index %}
                 {% endfor %}
             </div>
 
             <div class="form-actions js-form-wrapper form-wrapper">
-                <button
-                    class="add-step btn btn-success"
-                    hx-trigger="click"
-                    hx-post="{{ h.url_for('tour.add_step') }}"
-                    hx-vals=''
-                    hx-swap="beforeend"
-                    hx-target=".tour-steps__steps"
-                    >
+                <button class="add-step btn btn-success" hx-trigger="click" hx-post="{{ h.url_for('tour.add_step') }}"
+                    hx-vals='' hx-swap="beforeend" hx-target=".tour-steps__steps">
                     {{ _("Add step") }}
                     <i class="fa fa-plus"></i>
                 </button>
             </div>
-        </div>
-
-        <div class="form-actions js-form-wrapper form-wrapper">
-            <button class="btn btn-primary" type="submit">{{ _("Update tour") }}</button>
         </div>
     </form>
 {% endblock ap_content %}

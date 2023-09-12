@@ -29,7 +29,7 @@ class TourUpdateView(MethodView):
         data_dict = self._prepare_payload(tour_id)
 
         try:
-            tk.get_action("tour_update")(self._build_context(),data_dict)
+            tk.get_action("tour_update")(self._build_context(), data_dict)
         except tk.ValidationError as e:
             return tk.render(
                 "tour/tour_edit.html",
@@ -58,6 +58,7 @@ class TourUpdateView(MethodView):
             "step_intro",
             "step_position",
             "step_clear",
+            "step_index"
         )
 
         steps = {}
@@ -84,7 +85,6 @@ class TourUpdateView(MethodView):
             steps[idx]["image"][0].pop("url", None)
             steps[idx].setdefault("image", [{}])
             steps[idx]["image"][0].update({"upload": file or None})
-
 
         return {
             "id": tour_id,
