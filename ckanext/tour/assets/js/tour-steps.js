@@ -11,8 +11,7 @@ ckan.module("tour-steps", function ($) {
             this.addStepBtn = $(".add-step");
 
             // add event listeners
-            $(document).on('click', '.add-step', this._onAddStep);
-            $(document).on('click', '.remove-step', this._onRemoveStep);
+            $(document).on('click', '.add-step', this._afterStepAdded);
             $(document).on('click', '.btn-collapse-steps', this._onCollapseAllSteps);
 
             // HTMX events
@@ -38,23 +37,39 @@ ckan.module("tour-steps", function ($) {
                 plugins: [Plugins.SortAnimation]
             }).on('drag:stopped', () => this._updateStepsIndexes())
 
+
+            document.body.addEventListener('htmx:confirm', function (evt) {
+                if (evt.detail.path.includes("/tour/delete_step")) {
+                    evt.preventDefault();
+
+                    swal({
+                        text: "Are you sure you wish to delete a step?",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                    }).then((confirmed) => {
+                        if (confirmed) {
+                            self._onRemoveStep(evt.detail.target.dataset.stepId);
+                            evt.detail.issueRequest();
+                        }
+                    });
+                }
+            });
         },
 
-        _onAddStep: function (e) {
+        _afterStepAdded: function (e) {
             //
         },
 
         /**
-         * Triggered on remove step
+         * Remove a step node from DOM
          *
-         * @param {event} e
+         * @param {string} e
          */
-        _onRemoveStep: function (e) {
-            e.preventDefault();
-
+        _onRemoveStep: function (stepId) {
             var self = this;
 
-            $(e.target).closest(".tour-accordion").hide('slow', function () {
+            $("#step-" + stepId).hide('slow', function () {
                 this.remove();
                 self._toggleRemoveBtns();
                 self._updateStepsIndexes();

@@ -24,3 +24,12 @@ class TourDeleteView(MethodView):
             tk.h.flash_success("Done!")
 
         return tk.redirect_to("tour.list")
+
+class TourStepDeleteView(MethodView):
+    def post(self, tour_step_id: str) -> str:
+        try:
+            tk.get_action("tour_step_remove")({}, {"id": tour_step_id})
+        except tk.ValidationError:
+            pass
+
+        return ""

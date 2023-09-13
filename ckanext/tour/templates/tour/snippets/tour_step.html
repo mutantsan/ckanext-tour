@@ -15,7 +15,14 @@
             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ step_id }}"
                 aria-expanded="true" aria-controls="collapse-{{ step_id }}">
             </button>
-            <button class="remove-step btn btn-danger" data-step-id="{{ step_id }}">{{ _("Delete") }}</button>
+            <button
+                class="remove-step btn btn-danger"
+                data-step-id="{{ step_id }}"
+                hx-trigger="click"
+                hx-post="{{ h.url_for('tour.delete_step', tour_step_id=step_id) }}"
+                >
+                {{ _("Delete") }}
+            </button>
         </h3>
         <div id="collapse-{{ step_id }}" class="accordion-collapse collapse show" aria-labelledby="step-header-{{ step_id }}"
             data-bs-parent="#step-{{ step_id }}">

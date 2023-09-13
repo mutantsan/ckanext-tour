@@ -74,7 +74,7 @@ this.ckan.module('tour-init', function (jQuery) {
         _prepareSteps: function (steps) {
             steps.forEach(step => {
                 if (step.image) {
-                    step.intro = step.intro + " " + $("<img />", {
+                    step.intro = step.intro + "<br><br>" + $("<img />", {
                         src: step.image.url
                     })[0].outerHTML;
                 }

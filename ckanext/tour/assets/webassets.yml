@@ -13,6 +13,7 @@ tour-htmx:
   filter: rjsmin
   output: ckanext-tour/%(version)s-tour-htmx.js
   contents:
+    - js/vendor/sweetalert.min.js
     - js/vendor/htmx.min.js
 
 tour-css:

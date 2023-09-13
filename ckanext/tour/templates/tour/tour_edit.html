@@ -24,6 +24,11 @@
         <div class="form-actions js-form-wrapper form-wrapper">
             <button class="btn btn-primary" type="submit">{{ _("Update tour") }}</button>
             <button class="btn btn-black btn-collapse-steps">{{ _("Collapse all steps") }}</button>
+            <button class="add-step btn btn-success" hx-trigger="click" hx-post="{{ h.url_for('tour.add_step') }}"
+                hx-vals='' hx-swap="beforeend" hx-target=".tour-steps__steps">
+                {{ _("Add step") }}
+                <i class="fa fa-plus"></i>
+            </button>
         </div>
 
         <h3>{{ _("Tour steps:") }}</h3>
@@ -36,19 +41,10 @@
         {% endif %}
 
         <div class="tour-steps" data-module="tour-steps tour-htmx">
-
             <div class="tour-steps__steps">
                 {% for step in tour.steps %}
                 {% snippet 'tour/snippets/tour_step.html', step=step, step_index=loop.index %}
                 {% endfor %}
-            </div>
-
-            <div class="form-actions js-form-wrapper form-wrapper">
-                <button class="add-step btn btn-success" hx-trigger="click" hx-post="{{ h.url_for('tour.add_step') }}"
-                    hx-vals='' hx-swap="beforeend" hx-target=".tour-steps__steps">
-                    {{ _("Add step") }}
-                    <i class="fa fa-plus"></i>
-                </button>
             </div>
         </div>
     </form>
