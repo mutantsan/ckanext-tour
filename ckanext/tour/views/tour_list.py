@@ -8,7 +8,7 @@ from ckan.lib.helpers import Page
 from flask import Blueprint
 from flask.views import MethodView
 
-from ckanext.admin_panel.utils import ap_before_request
+from ckanext.ap_main.utils import ap_before_request
 
 tour = Blueprint("tour", __name__)
 tour.before_request(ap_before_request)
@@ -56,16 +56,16 @@ class TourListView(MethodView):
                 actions=[
                     tk.h.ap_table_action(
                         "tour.delete",
-                        tk._("Delete"),
-                        {"tour_id": "$id"},
+                        label=tk._("Delete"),
+                        params={"tour_id": "$id"},
                         attributes={"class": "btn btn-danger"},
                     ),
                     tk.h.ap_table_action(
                         "tour.edit",
-                        tk._("Edit"),
-                        {"tour_id": "$id"},
+                        label=tk._("Edit"),
+                        params={"tour_id": "$id"},
                     ),
-                ],
+                ]
             ),
         ]
 

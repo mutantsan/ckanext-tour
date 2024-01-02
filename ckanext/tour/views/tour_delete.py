@@ -4,7 +4,7 @@ import ckan.plugins.toolkit as tk
 from flask import Blueprint, Response
 from flask.views import MethodView
 
-from ckanext.admin_panel.utils import ap_before_request
+from ckanext.ap_main.utils import ap_before_request
 
 tour = Blueprint("tour", __name__)
 tour.before_request(ap_before_request)
@@ -24,6 +24,7 @@ class TourDeleteView(MethodView):
             tk.h.flash_success("Done!")
 
         return tk.redirect_to("tour.list")
+
 
 class TourStepDeleteView(MethodView):
     def post(self, tour_step_id: str) -> str:

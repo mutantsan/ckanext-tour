@@ -3,9 +3,8 @@ from __future__ import annotations
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
 
-from ckanext.admin_panel.interfaces import IAdminPanel
-from ckanext.admin_panel.types import (ColRenderer, ConfigurationItem,
-                                       SectionConfig)
+from ckanext.ap_main.interfaces import IAdminPanel
+from ckanext.ap_main.types import ColRenderer, ConfigurationItem, SectionConfig
 from ckanext.tour.col_renderers import get_renderers
 
 

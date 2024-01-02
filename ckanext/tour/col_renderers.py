@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import ckanext.admin_panel.types as ap_types
+import ckanext.ap_main.types as ap_types
 from ckanext.toolbelt.decorators import Collector
 
 renderer, get_renderers = Collector("tour").split()

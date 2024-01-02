@@ -5,7 +5,7 @@ import ckan.types as types
 from flask import Blueprint, Response
 from flask.views import MethodView
 
-from ckanext.admin_panel.utils import ap_before_request
+from ckanext.ap_main.utils import ap_before_request
 
 tour = Blueprint("tour", __name__)
 tour.before_request(ap_before_request)
@@ -58,7 +58,7 @@ class TourUpdateView(MethodView):
             "step_intro",
             "step_position",
             "step_clear",
-            "step_index"
+            "step_index",
         )
 
         steps = {}

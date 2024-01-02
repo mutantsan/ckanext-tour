@@ -14,5 +14,6 @@ def tour_get_position_options():
         )
     ]
 
+
 def tour_random_step_id() -> str:
     return str(uuid.uuid4())
