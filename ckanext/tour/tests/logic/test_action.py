@@ -65,6 +65,45 @@ class TestTourStepCreate:
         with pytest.raises(tk.ValidationError, match="Missing value"):
             tour_step_factory(tour_id=tour["id"], element=None)
 
+    def test_error_on_child_should_clear_parent(self, sysadmin):
+        """When we are creating from the UI, we are passing all the tour data at
+        once and if something is wrong, do not create anything.
+
+        TODO: currently I wasn't able to check if something is wrong with Image data"""
+
+        with pytest.raises(tk.ValidationError):
+            call_action(
+                "tour_create",
+                title="test tour",
+                anchor="#page",
+                page="/datasets/",
+                steps=[
+                    {
+                        "title": "step #1",
+                        "element": ".header",
+                        "intro": "test intro",
+                    }
+                ],
+            )
+
+        assert not tour_model.Tour.all()
+
+        call_action(
+            "tour_create",
+            title="test tour",
+            anchor="#page",
+            page="/datasets/",
+            author_id=sysadmin["id"],
+            steps=[
+                {
+                    "title": "step #1",
+                    "element": ".header",
+                    "intro": "test intro",
+                }
+            ],
+        )
+
+        assert tour_model.Tour.all()
 
 @pytest.mark.usefixtures("with_plugins", "clean_db", "mock_storage")
 class TestTourUpdate:
@@ -134,7 +173,7 @@ class TestTourStepUpdate:
     def test_update_not_existing(self):
         with pytest.raises(
             tk.ValidationError,
-            match="The tour with an id xxx doesn't exist",
+            match="The tour step with an id xxx doesn't exist",
         ):
             call_action("tour_step_update", id="xxx")
 
@@ -174,17 +213,15 @@ class TestStepImageCreate:
     """Each step could have 1 image. It could be created either from uploaded file,
     or by URL"""
 
-    def test_create_from_invalid_url(self, tour_step, tour_step_image_factory):
-        """You should be able to use only url-like string for a URL field"""
-        with pytest.raises(tk.ValidationError, match="Please provide a valid URL"):
-            tour_step_image_factory(
-                tour_step_id=tour_step["id"], url="xxx", upload=None
-            )
-
-    def test_create_from_valid_url(self, tour_step, tour_step_image_factory):
+    def test_create_from_url(self, tour_step, tour_step_image_factory):
         """You should be able to create a step image entity from a URL.
         We are not checking that this URL somehow related to an image, it's up
-        to user"""
+        to user
+
+        We are not validating URL, because if user choose to upload a file,
+        the URL will be a filename which is obviosly not a valid URL.
+
+        """
         image_from_url = tour_step_image_factory(
             tour_step_id=tour_step["id"], url="https://image.url", upload=None
         )
@@ -206,12 +243,3 @@ class TestStepImageCreate:
             tk.ValidationError, match="You have to provide either file or URL"
         ):
             tour_step_image_factory(tour_step_id=tour_step["id"], url=None, upload=None)
-
-    def test_create_from_both(self, tour_step, tour_step_image_factory):
-        """Obviously, you should either use URL of file, not both at the same time"""
-        with pytest.raises(
-            tk.ValidationError, match="You cannot use a file and a URL at the same time"
-        ):
-            tour_step_image_factory(
-                tour_step_id=tour_step["id"], url="https://image.url"
-            )

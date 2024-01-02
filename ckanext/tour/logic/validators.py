@@ -55,6 +55,16 @@ def tour_url_validator(
     if not url:
         return
 
+    # step_idx = key[1]
+    # try:
+    #     image_idx = key[3]
+    # except IndexError:
+    #     import ipdb; ipdb.set_trace()
+    #     pass
+
+    # if data.get(('steps', step_idx, 'image', image_idx, 'upload')):
+    #     return
+
     try:
         pieces = urlparse(url)
         if (

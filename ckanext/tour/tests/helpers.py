@@ -1,6 +1,6 @@
 from werkzeug.datastructures import FileStorage as MockFileStorage  # noqa
 
-CSV_DATA = b"a,b,c,d\n1,2,3,4"
+IMAGE_DATA = b"a,b,c,d\n1,2,3,4"
 
 
 class FakeFileStorage(MockFileStorage):

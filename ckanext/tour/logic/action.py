@@ -8,8 +8,6 @@ import ckan.plugins.toolkit as tk
 from ckan.logic import validate
 
 import ckanext.tour.logic.schema as schema
-import ckanext.tour.model as tour_model
-from ckanext.tour.exception import TourStepFileError
 from ckanext.tour.model import Tour, TourStep, TourStepImage
 
 
@@ -47,10 +45,18 @@ def tour_create(context, data_dict):
     for step in steps:
         step["tour_id"] = tour.id
 
-        tk.get_action("tour_step_create")(
-            {"ignore_auth": True},
-            step,
-        )
+        try:
+            tk.get_action("tour_step_create")(
+                {"ignore_auth": True},
+                step,
+            )
+        except tk.ValidationError as e:
+            tk.get_action("tour_remove")(
+                {"ignore_auth": True},
+                {"id": tour.id},
+            )
+
+            raise tk.ValidationError(e.error_dict if e else {})
 
     return tour.dictize(context)
 
@@ -94,7 +100,7 @@ def tour_step_create(context, data_dict):
                     "tour_step_id": tour_step.id,
                 },
             )
-        except TourStepFileError as e:
+        except tk.ValidationError as e:
             raise tk.ValidationError(
                 {"image": [f"Error while uploading step image: {e}"]}
             )
@@ -108,9 +114,10 @@ def tour_update(context, data_dict):
 
     tour = cast(Tour, Tour.get(data_dict["id"]))
 
-    tour.title = data_dict["title"]
-    tour.anchor = data_dict["anchor"]
-    tour.page = data_dict["page"]
+    tour.title = data_dict.get("title", tour.title)
+    tour.anchor = data_dict.get("anchor", tour.anchor)
+    tour.page = data_dict.get("page", tour.page)
+    tour.state = data_dict.get("state", tour.page)
 
     model.Session.commit()
 
@@ -161,7 +168,7 @@ def tour_step_update(context, data_dict):
 
         try:
             tk.get_action(action)({"ignore_auth": True}, data_dict["image"][0])
-        except TourStepFileError as e:
+        except tk.ValidationError as e:
             raise tk.ValidationError(
                 {"image": [f"Error while uploading step image: {e}"]}
             )
@@ -186,12 +193,7 @@ def tour_step_image_upload(context, data_dict):
     tour_step_id = data_dict.pop("tour_step_id", None)
 
     if not any([data_dict.get("upload"), data_dict.get("url")]):
-        raise TourStepFileError(tk._("You have to provide either file or URL"))
-
-    if all([data_dict.get("upload"), data_dict.get("url")]):
-        raise TourStepFileError(
-            tk._("You cannot use a file and a URL at the same time")
-        )
+        raise tk.ValidationError(tk._("You have to provide either file or URL"))
 
     if not data_dict.get("upload"):
         return TourStepImage.create(
@@ -206,10 +208,8 @@ def tour_step_image_upload(context, data_dict):
                 "upload": data_dict["upload"],
             },
         )
-    except tk.ValidationError as e:
-        raise TourStepFileError(e.error_summary)
     except OSError as e:
-        raise TourStepFileError(e)
+        raise tk.ValidationError(str(e))
 
     data_dict["file_id"] = result["id"]
 
@@ -223,12 +223,7 @@ def tour_step_image_update(context, data_dict):
     tk.check_access("tour_step_update", context, data_dict)
 
     if not any([data_dict.get("upload"), data_dict.get("url")]):
-        raise TourStepFileError(tk._("You have to provide either file or URL"))
-
-    if all([data_dict.get("upload"), data_dict.get("url")]):
-        raise TourStepFileError(
-            tk._("You cannot use a file and a URL at the same time")
-        )
+        raise tk.ValidationError(tk._("You have to provide either file or URL"))
 
     tour_step_image = cast(
         TourStepImage,
@@ -249,7 +244,7 @@ def tour_step_image_update(context, data_dict):
             },
         )
     except (tk.ValidationError, OSError) as e:
-        raise TourStepFileError(str(e))
+        raise tk.ValidationError(str(e))
 
     tour_step_image.url = result["url"]
 

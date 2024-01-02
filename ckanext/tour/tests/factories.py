@@ -4,7 +4,7 @@ import factory
 from ckan.tests import factories
 
 from ckanext.tour import model as tour_model
-from ckanext.tour.tests.helpers import CSV_DATA, FakeFileStorage
+from ckanext.tour.tests.helpers import IMAGE_DATA, FakeFileStorage
 
 
 class TourStepImageFactory(factories.CKANFactory):
@@ -13,9 +13,9 @@ class TourStepImageFactory(factories.CKANFactory):
         action = "tour_step_image_upload"
 
     tour_step_id = factory.LazyFunction(lambda: TourStepFactory()["id"])
-    url = None
+    url = "step.jpeg"
     upload = factory.LazyAttribute(
-        lambda _: FakeFileStorage(BytesIO(CSV_DATA), "step.jpeg")
+        lambda _: FakeFileStorage(BytesIO(IMAGE_DATA), "step.jpeg")
     )
 
 

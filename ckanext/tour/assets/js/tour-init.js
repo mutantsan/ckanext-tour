@@ -27,6 +27,11 @@ this.ckan.module('tour-init', function (jQuery) {
             return md.mobile() ? true : false;
         },
 
+        /**
+         * Creates a tour mark if not exist
+         *
+         * @returns
+         */
         createMark: function () {
             if (!this.mark) {
                 this.mark = jQuery(this.options.template);
@@ -39,8 +44,10 @@ this.ckan.module('tour-init', function (jQuery) {
         },
 
         _initIntro: function (introData) {
+            console.log(introData);
             var showed = localStorage.getItem('intro-' + introData.id);
-            var shouldStart = !showed && !this.isMobile;
+            var shouldAttach = introData.state === "active";
+            var shouldStart = !showed && !this.isMobile && window.location.pathname == introData.page;
             var anchorExists = $(introData.anchor).length;
 
             this.intro = introJs();
@@ -60,15 +67,17 @@ this.ckan.module('tour-init', function (jQuery) {
                 steps: this._prepareSteps(introData.steps),
             });
 
+            if (shouldAttach && !shouldStart) {
+                this.createMark();
 
-            this.createMark().appendTo(anchorExists ? introData.anchor : '.breadcrumb .active');
-            this.mark.on('click', this._onClick);
+                this.mark.insertAfter(anchorExists ? introData.anchor : '.breadcrumb .active');
+                this.mark.on('click', this._onClick);
+            }
 
-            // if (shouldStart) {
-            //     // for development
-            //     localStorage.setItem('intro-' + introData.id, 1);
-            //     this.intro.start();
-            // }
+            if (shouldStart) {
+                localStorage.setItem('intro-' + introData.id, 1);
+                this.intro.start();
+            }
         },
 
         _prepareSteps: function (steps) {

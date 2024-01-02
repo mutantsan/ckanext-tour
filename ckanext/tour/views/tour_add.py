@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import ckan.plugins.toolkit as tk
-from flask import Blueprint
+from flask import Blueprint, Response
 from flask.views import MethodView
 
 from ckanext.ap_main.utils import ap_before_request
@@ -14,7 +14,7 @@ class TourAddView(MethodView):
     def get(self) -> str:
         return tk.render("tour/tour_add.html", extra_vars={"data": {}})
 
-    def post(self) -> str:
+    def post(self) -> Response | str:
         data_dict = self._prepare_payload()
 
         try:
@@ -37,7 +37,7 @@ class TourAddView(MethodView):
 
         tk.h.flash_success(tk._("The tour has been created!"))
 
-        return tk.render("tour/tour_add.html", extra_vars={"data": {}, "errors": {}})
+        return tk.redirect_to("tour.list")
 
     def _prepare_payload(self):
         step_fields = (

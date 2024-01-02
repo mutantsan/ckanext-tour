@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from ckan.lib.navl.validators import ignore_empty
 from ckan.logic.schema import validator_args
 
 from ckanext.tour.model import Tour, TourStep
@@ -47,10 +46,14 @@ def tour_update(
     not_empty,
     unicode_safe,
     tour_tour_exist,
+    ignore_empty
 ) -> Schema:
     tour_schema = tour_create()
     tour_schema["id"] = [not_empty, unicode_safe, tour_tour_exist]
     tour_schema["steps"] = tour_step_update()
+
+    # non-mandatory
+    tour_schema["title"] = [ignore_empty, unicode_safe]
 
     # we shouldn't be able to change an author_id
     tour_schema.pop("author_id")
@@ -111,7 +114,7 @@ def tour_step_image_schema(
 ) -> Schema:
     return {
         "upload": [ignore_empty],
-        "url": [ignore_empty, unicode_safe, tour_url_validator],
+        "url": [ignore_empty, unicode_safe],
         "tour_step_id": [not_missing, unicode_safe, tour_tour_step_exist],
     }
 
