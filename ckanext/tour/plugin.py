@@ -39,7 +39,7 @@ class TourPlugin(plugins.SingletonPlugin):
                         info="Global configuration for a tour",
                     ),
                     ConfigurationItem(
-                        name="Manage tours",
+                        name="List of tours",
                         blueprint="tour.list",
                         info="Manage existing tours",
                     ),
