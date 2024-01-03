@@ -33,11 +33,11 @@ class TourPlugin(plugins.SingletonPlugin):
             SectionConfig(
                 name="Tour",
                 configs=[
-                    ConfigurationItem(
-                        name="Global settings",
-                        blueprint="tour.config",
-                        info="Global configuration for a tour",
-                    ),
+                    # ConfigurationItem(
+                    #     name="Global settings",
+                    #     blueprint="tour.config",
+                    #     info="Global configuration for a tour",
+                    # ),
                     ConfigurationItem(
                         name="List of tours",
                         blueprint="tour.list",
