@@ -12,12 +12,11 @@ this.ckan.module('tour-init', function (jQuery) {
         initialize: function () {
             $.proxyAll(this, /_/);
 
-            this.intro = null;
+            this.tour = null;
             this.isMobile = this._isMobile()
 
             $.ajax({
                 url: this.sandbox.url("/api/action/tour_list"),
-                // data: {},
                 success: this._onSuccessRequest
             });
         },
@@ -44,28 +43,62 @@ this.ckan.module('tour-init', function (jQuery) {
         },
 
         _initIntro: function (introData) {
-            console.log(introData);
             var showed = localStorage.getItem('intro-' + introData.id);
             var shouldAttach = introData.state === "active";
             var shouldStart = !showed && !this.isMobile && window.location.pathname == introData.page;
             var anchorExists = $(introData.anchor).length;
 
-            this.intro = introJs();
-            this.intro.setOptions({
-                overlayOpacity: 0.7,
-                nextLabel: ' &rarr; ',
-                prevLabel: '&larr; ',
-                skipLabel: this._('Skip'),
-                doneLabel: this._('Got it!'),
-                showStepNumbers: false,
-                exitOnEsc: true, // default
-                exitOnOverlayClick: true, // default
-                keyboardNavigation: true, // default
-                showButtons: true, // default
-                showBullets: true, // default,
-                showProgress: false, // default
-                steps: this._prepareSteps(introData.steps),
+            this.tour = new Shepherd.Tour({
+                useModalOverlay: true,
+                defaultStepOptions: {
+                    floatingUIOptions: { middleware: [FloatingUICore.offset(20)]},
+                    cancelIcon: {
+                        enabled: true,
+                        label: "Skip tour"
+                    },
+                    modalOverlayOpeningPadding: 5,
+                    modalOverlayOpeningRadius: 5,
+                    classes: 'tour-step',
+                    scrollTo: { behavior: 'smooth', block: 'center' },
+                    when: {
+                        show() {
+                            // prevent scrolling while we are showing tour
+                            bodyScrollLock.disableBodyScroll(".tour-step");
+
+                            const currentStep = this;
+                            const currentStepIdx = this.tour.steps.indexOf(currentStep);
+
+                            const progressListEl = document.createElement('ul');
+                            progressListEl.classList = ["list-unstyled shepherd-stats"]
+
+                            for (let i = 0; i < this.tour.steps.length; i++) {
+                                const bulletElement = document.createElement('li');
+                                bulletElement.innerText = " ";
+                                bulletElement.dataset.stepId = this.tour.steps[i].id;
+
+                                if (i === currentStepIdx) {
+                                    bulletElement.classList = ["active"];
+                                }
+
+                                $(bulletElement).click((el) => {
+                                    Shepherd.activeTour.show(el.target.dataset.stepId);
+                                })
+
+                                progressListEl.append(bulletElement)
+                            }
+
+                            $('.shepherd-footer').before(progressListEl);
+                        },
+                        destroy() {
+                            // release scroll after tour
+                            bodyScrollLock.clearAllBodyScrollLocks();
+                        }
+                    }
+                },
+
             });
+
+            this.tour.addSteps(this._prepareSteps(introData.steps));
 
             if (shouldAttach && !shouldStart) {
                 this.createMark();
@@ -76,16 +109,45 @@ this.ckan.module('tour-init', function (jQuery) {
 
             if (shouldStart) {
                 localStorage.setItem('intro-' + introData.id, 1);
-                this.intro.start();
+                this.tour.start();
             }
         },
 
         _prepareSteps: function (steps) {
-            steps.forEach(step => {
+            steps.forEach((step, idx) => {
+                let isLast = steps.length - 1 === idx;
+                let isFirst = idx === 0;
+                let lastButtonText = isLast ? this._("Done") : "→";
+                let firstButtonClasses = isFirst ? 'shepherd-back disabled' : 'shepherd-back';
+
                 if (step.image) {
-                    step.intro = step.intro + "<br><br>" + $("<img />", {
+                    step.text = step.intro + "<br><br>" + $("<img />", {
                         src: step.image.url
                     })[0].outerHTML;
+                } else {
+                    step.text = step.intro;
+                }
+
+                step.buttons = [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        classes: firstButtonClasses,
+                        text: "←"
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        classes: 'shepherd-next',
+                        text: lastButtonText
+                    }
+                ]
+
+                step.attachTo = {
+                    element: step.element,
+                    on: step.position
                 }
             });
 
@@ -93,7 +155,7 @@ this.ckan.module('tour-init', function (jQuery) {
         },
 
         _onClick: function (e) {
-            this.intro.start();
+            this.tour.start();
         }
     }
 });

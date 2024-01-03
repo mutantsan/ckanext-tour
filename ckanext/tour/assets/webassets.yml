@@ -2,8 +2,12 @@ tour-js:
   filter: rjsmin
   output: ckanext-tour/%(version)s-tour.js
   contents:
-    - js/vendor/intro.min.js
+    # - js/vendor/intro.min.js
+    - js/vendor/shepherd.min.js
+    - js/vendor/bodyScrollLock.min.js
     - js/vendor/mobile-detect.min.js
+    - js/vendor/floating-ui.core.umd.js
+
     - js/tour-init.js
     - js/tour-steps.js
     - js/tour-htmx.js
@@ -20,7 +24,8 @@ tour-css:
   filter: cssrewrite
   output: ckanext-tour/%(version)s-tour.css
   contents:
-    - css/vendor/introjs.min.css
+    # - css/vendor/introjs.min.css
+    - css/vendor/shepherd.min.css
     - css/style.css
 
 tour-draggable:
