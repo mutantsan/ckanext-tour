@@ -15,7 +15,6 @@ class TourDeleteView(MethodView):
         return tk.render("tour/tour_delete.html", extra_vars={"tour_id": tour_id})
 
     def post(self, tour_id: str) -> Response:
-        import ipdb; ipdb.set_trace()
         try:
             tk.get_action("tour_remove")({}, {"id": tour_id})
         except tk.ObjectNotFound as e:

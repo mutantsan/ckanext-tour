@@ -3,9 +3,12 @@ from __future__ import annotations
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
 
+from ckanext.collection.interfaces import ICollection, CollectionFactory
+
 from ckanext.ap_main.interfaces import IAdminPanel
-from ckanext.ap_main.types import ColRenderer, ConfigurationItem, SectionConfig
-from ckanext.tour.col_renderers import get_renderers
+from ckanext.ap_main.types import ConfigurationItem, SectionConfig
+
+from ckanext.tour.collection import TourListCollection
 
 
 @tk.blanket.helpers
@@ -16,6 +19,7 @@ from ckanext.tour.col_renderers import get_renderers
 class TourPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(IAdminPanel, inherit=True)
+    plugins.implements(ICollection, inherit=True)
 
     # IConfigurer
 
@@ -53,5 +57,7 @@ class TourPlugin(plugins.SingletonPlugin):
         )
         return config_list
 
-    def get_col_renderers(self) -> dict[str, ColRenderer]:
-        return get_renderers()
+    # ICollection
+
+    def get_collection_factories(self) -> dict[str, CollectionFactory]:
+        return {"tour-list": TourListCollection}

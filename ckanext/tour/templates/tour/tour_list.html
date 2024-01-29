@@ -4,38 +4,16 @@
 {% import 'macros/form.html' as form %}
 
 {% block breadcrumb_content %}
-    <li class="active">{% link_for _("Tour list"), named_route='tour.list' %}</li>
+    <li class="active">{% link_for _("Tour list"), request.endpoint %}</li>
 {% endblock breadcrumb_content %}
 
 {% block ap_content %}
-    <h1>{{ _("Tour list") }}</h1>
-
-    <div class="row g-3">
-        <form action="{{ h.url_for('tour.list') }}" method="POST">
-            {{ h.csrf_input() }}
-
-            {% if page.items %}
-                <div class="bulk-actions">
-                    {{ form.select('bulk-action', id='bulk-action', label=_('Action'), options=bulk_options, selected="", error=error) }}
-
-                    <button type="submit" id="bulk-submit" class="btn btn-primary mb-3">
-                        {{ _("Apply to selected items") }}
-                    </button>
-                </div>
-
-                {% snippet "admin_panel/config/snippets/sortable_table.html", items=page.items, columns=columns, order_by=order_by, sort=sort, bulk_check=1 %}
-            {% else %}
-                {% set add_tour_url = h.url_for('tour.add') %}
-                <p>
-                {%- trans -%}
-                    No tours found. Want to <a href="{{ add_tour_url }}">create</a> one?
-                {%- endtrans -%}
-                </p>
-            {% endif %}
-        </form>
-    </div> <!-- row -->
+    {% if collection.data.total %}
+        {{ collection.serializer.render() | safe }}
+    {% else %}
+        <p>
+            {{ _("No tours found") }}
+            <a href="{{ request.path }}">{{ _("Clear the search") }}</a>
+        </p>
+    {% endif %}
 {% endblock ap_content %}
-
-{% block page_pagination %}
-    {{ page.pager() }}
-{% endblock %}

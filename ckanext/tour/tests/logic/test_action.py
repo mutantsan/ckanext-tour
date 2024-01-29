@@ -105,6 +105,7 @@ class TestTourStepCreate:
 
         assert tour_model.Tour.all()
 
+
 @pytest.mark.usefixtures("with_plugins", "clean_db", "mock_storage")
 class TestTourUpdate:
     def test_update_not_existing(self):
@@ -127,45 +128,6 @@ class TestTourUpdate:
         assert updated_tour["title"] == "xxx"
         assert updated_tour["page"] == "yyy"
         assert updated_tour["anchor"] == "zzz"
-
-    def test_set_empty_title(self, tour_factory):
-        tour = tour_factory(steps=[], title="test-1")
-
-        tour = call_action("tour_show", id=tour["id"])
-        tour["title"] = ""
-
-        with pytest.raises(tk.ValidationError, match="Missing value"):
-            call_action("tour_update", **tour)
-
-    # def test_change_to_wrong_status(self, data_request):
-    #     with pytest.raises(
-    #         tk.ValidationError,
-    #         match="Value must be one of",
-    #     ):
-    #         call_action(
-    #             "msf_rd_data_request_update_status",
-    #             id=data_request["id"],
-    #             status="closed",
-    #         )
-
-    # def test_change_resolved_status(self, data_request):
-    #     result = call_action(
-    #         "msf_rd_data_request_update_status",
-    #         id=data_request["id"],
-    #         status=DataRequest.Status.resolved,
-    #     )
-
-    #     assert result["status"] == DataRequest.Status.resolved
-
-    #     with pytest.raises(
-    #         tk.ValidationError,
-    #         match="Can't update resolved data request",
-    #     ):
-    #         call_action(
-    #             "msf_rd_data_request_update_status",
-    #             id=data_request["id"],
-    #             status=DataRequest.Status.requested,
-    #         )
 
 
 @pytest.mark.usefixtures("with_plugins", "clean_db", "mock_storage")

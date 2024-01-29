@@ -202,7 +202,7 @@ class TourStepImage(tk.BaseModel):
                     {"ignore_auth": True}, {"id": self.file_id}
                 )
             except tk.ObjectNotFound:
-                raise TourStepFileError("Related file not found.")
+                pass
 
         model.Session().autoflush = False
         model.Session.delete(self)
@@ -214,6 +214,6 @@ class TourStepImage(tk.BaseModel):
                 {"ignore_auth": True}, {"id": file_id}
             )
         except tk.ObjectNotFound:
-            raise TourStepFileError("Related file not found.")
+            return {}
 
         return result
