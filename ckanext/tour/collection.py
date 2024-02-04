@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
 from ckanext.collection.utils.data.model import ModelData
 
 from dominate import tags
@@ -15,7 +14,7 @@ from ckanext.ap_main.collection.base import (
     ApColumns,
     BulkAction,
     RowAction,
-    ApHtmxTableSerializer
+    ApHtmxTableSerializer,
 )
 
 from ckanext.tour.model import Tour
@@ -28,7 +27,8 @@ def tour_row_dictizer(serializer: ApHtmxTableSerializer, row: Tour):
 
     return data
 
-class TourListCollection(ApCollection[Any]):
+
+class TourListCollection(ApCollection):
     SerializerFactory = ApHtmxTableSerializer.with_attributes(
         row_dictizer=tour_row_dictizer
     )
@@ -118,7 +118,7 @@ class TourListCollection(ApCollection[Any]):
                         "tour_id": "$id",
                     },
                 },
-            )
+            ),
         ],
         static_filters=[
             InputFilter(
