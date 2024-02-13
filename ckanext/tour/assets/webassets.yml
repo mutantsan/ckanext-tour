@@ -2,7 +2,6 @@ tour-js:
   filter: rjsmin
   output: ckanext-tour/%(version)s-tour.js
   contents:
-    # - js/vendor/intro.min.js
     - js/vendor/shepherd.min.js
     - js/vendor/bodyScrollLock.min.js
     - js/vendor/mobile-detect.min.js
