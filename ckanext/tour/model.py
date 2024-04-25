@@ -37,7 +37,7 @@ class Tour(tk.BaseModel):
     user = relationship(model.User)
 
     def __repr__(self):
-        return f"Tour(title={self.title}"
+        return f"Tour(title={self.title})"
 
     @classmethod
     def create(cls, data_dict) -> Self:
@@ -75,6 +75,12 @@ class Tour(tk.BaseModel):
     @classmethod
     def get(cls, tour_id: str) -> Self | None:
         query: Query = model.Session.query(cls).filter(cls.id == tour_id)
+
+        return query.one_or_none()
+
+    @classmethod
+    def get_by_anchor(cls, tour_anchor: str) -> Self | None:
+        query: Query = model.Session.query(cls).filter(cls.anchor == tour_anchor)
 
         return query.one_or_none()
 

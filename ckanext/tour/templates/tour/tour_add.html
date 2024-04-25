@@ -3,70 +3,16 @@
 {% import 'macros/form.html' as form %}
 
 {% block breadcrumb_content %}
+    <li>{% link_for _("Tour list"), named_route='tour.list' %}</li>
     <li class="active">{% link_for _("Tour add"), named_route='tour.add' %}</li>
 {% endblock breadcrumb_content %}
 
 {% block ap_content %}
-    <form action="{{ h.url_for("tour.add") }}" method="POST" enctype="multipart/form-data">
-        {% call form.input("title", label=_("Tour title"), value=data.title, attrs={'required': 1, 'class': 'form-control'}) %}
-            {{ form.info(_("A tour title to explain what is it for")) }}
-        {% endcall %}
-
-        {% call form.input("anchor", label=_("Query anchor"), value=data.anchor) %}
-            {{ form.info(_('An anchor element query that will trigger the tour. Could be a tooltip, button or any HTML element.', classes=['info-help-tight'])) }}
-        {% endcall %}
-
-        {% call form.input("page", label=_("Page anchor"), value=data.page) %}
-            {{ form.info(_('Optional. A path to a page, where tour will be applied. Note, that a page tour will be triggered automatically.', classes=['info-help-tight'])) }}
-        {% endcall %}
-
-
-        <div class="form-actions js-form-wrapper form-wrapper">
-            <button class="btn btn-primary" type="submit">{{ _("Create tour") }}</button>
-            <button class="btn btn-black btn-collapse-steps">{{ _("Collapse all steps") }}</button>
-        </div>
-
-        <h3>{{ _("Tour steps:") }}</h3>
-
-        {#} it's a temporary solution {#}
-        {% if errors %}
-            <div class="error-block mb-3 steps-errors">
-                {{ errors }}
-            </div>
-        {% endif %}
-
-        <div
-            class="tour-steps"
-            data-module="tour-steps tour-htmx">
-
-            <div class="tour-steps__steps">
-                {% for step in data.steps %}
-                    {% snippet 'tour/snippets/tour_step.html', step=step, step_index=loop.index %}
-                {% else %}
-                    {% snippet 'tour/snippets/tour_step.html', step={} %}
-                {% endfor %}
-            </div>
-
-            <div class="form-actions js-form-wrapper form-wrapper">
-                <button
-                    class="add-step btn btn-success"
-                    hx-trigger="click"
-                    hx-post="{{ h.url_for('tour.add_step') }}"
-                    hx-vals=''
-                    hx-swap="beforeend"
-                    hx-target=".tour-steps__steps"
-                    >
-                    {{ _("Add step") }}
-                    <i class="fa fa-plus"></i>
-                </button>
-            </div>
-        </div>
-    </form>
+    {% snippet 'tour/snippets/tour_form.html', data=data, errors=errors, form_action=h.url_for('tour.add') %}
 {% endblock ap_content %}
 
 {% block scripts %}
     {{ super() }}
 
     {% asset 'tour/tour-draggable' %}
-    {% asset 'tour/tour-htmx' %}
 {% endblock %}

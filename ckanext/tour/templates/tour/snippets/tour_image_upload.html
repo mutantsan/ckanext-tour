@@ -24,7 +24,7 @@
             data-module-previous_upload="{{ 'true' if previous_upload else 'false' }}"
             data-module-scope="{{ scope or '.image-upload' }}">
 
-        {{ input(field_url, label=url_label, id='field-image-url', type='url', placeholder=placeholder, value=data.image.url if data else "") }}
+        {{ input(field_url, label=url_label, id='field-image-url', type='url', placeholder=placeholder, value=data.image.url if data.image else "") }}
         {{ input(field_upload, label=upload_label, id='field-image-upload', type='file', placeholder='', value='', error='', attrs={"accept": "image/*", "class": "form-control"}) }}
 
         {% if data.image %}

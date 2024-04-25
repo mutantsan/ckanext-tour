@@ -2,11 +2,15 @@ this.ckan.module('tour-init', function (jQuery) {
     return {
         options: {
             template: [
-                '<a id="intro-switch" href="#" class="btn btn-sm question"><i class="fa fa-lg fa-question-circle"></i></a>',
+                '<a id="intro-switch" href="#" class="mx-2 question"><i class="fa fa-lg fa-question-circle"></i></a>',
                 '<i class="icon-question-sign"></i>',
                 '</i>',
                 '</a>'
-            ].join('\n')
+            ].join('\n'),
+            config: {
+                autoplay: false,
+                default_anchor: ".breadcrumb .active"
+            }
         },
 
         initialize: function () {
@@ -43,15 +47,17 @@ this.ckan.module('tour-init', function (jQuery) {
         },
 
         _initIntro: function (introData) {
+            var isActive = introData.state === "active";
             var showed = localStorage.getItem('intro-' + introData.id);
-            var shouldAttach = introData.state === "active";
-            var shouldStart = !showed && !this.isMobile && window.location.pathname == introData.page;
+
+            var shouldAttach = isActive && (!introData.page || window.location.pathname == introData.page);
+            var shouldStart = isActive && !showed && !this.isMobile && window.location.pathname == introData.page;
             var anchorExists = $(introData.anchor).length;
 
             this.tour = new Shepherd.Tour({
                 useModalOverlay: true,
                 defaultStepOptions: {
-                    floatingUIOptions: { middleware: [FloatingUICore.offset(20)]},
+                    floatingUIOptions: { middleware: [FloatingUICore.offset(20)] },
                     cancelIcon: {
                         enabled: true,
                         label: "Skip tour"
@@ -100,14 +106,14 @@ this.ckan.module('tour-init', function (jQuery) {
 
             this.tour.addSteps(this._prepareSteps(introData.steps));
 
-            if (shouldAttach && !shouldStart) {
+            if (shouldAttach) {
                 this.createMark();
 
-                this.mark.insertAfter(anchorExists ? introData.anchor : '.breadcrumb .active');
+                this.mark.insertAfter(anchorExists ? introData.anchor : this.options.config.default_anchor);
                 this.mark.on('click', this._onClick);
             }
 
-            if (shouldStart) {
+            if (shouldStart && this.options.config.autoplay) {
                 localStorage.setItem('intro-' + introData.id, 1);
                 this.tour.start();
             }

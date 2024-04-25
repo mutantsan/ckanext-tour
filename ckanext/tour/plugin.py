@@ -18,6 +18,7 @@ from ckanext.tour.collection import TourListCollection
 @tk.blanket.auth_functions
 @tk.blanket.blueprints
 @tk.blanket.validators
+@tk.blanket.config_declarations
 class TourPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(ICollection, inherit=True)
@@ -35,7 +36,10 @@ class TourPlugin(plugins.SingletonPlugin):
     def get_signal_subscriptions(self) -> types.SignalMapping:
         return {
             tk.signals.ckanext.signal("ap_main:collect_config_sections"): [
-                collect_config_sections_subs
+                self.collect_config_sections_subs
+            ],
+            tk.signals.ckanext.signal("ap_main:collect_config_schemas"): [
+                self.collect_config_schemas_subs
             ],
         }
 
@@ -44,20 +48,29 @@ class TourPlugin(plugins.SingletonPlugin):
     def get_collection_factories(self) -> dict[str, CollectionFactory]:
         return {"tour-list": TourListCollection}
 
+    @staticmethod
+    def collect_config_sections_subs(sender: None):
+        return SectionConfig(
+            name="Tour",
+            configs=[
+                ConfigurationItem(
+                    name="List of tours",
+                    blueprint="tour.list",
+                    info="Manage existing tours",
+                ),
+                ConfigurationItem(
+                    name="Add tour",
+                    blueprint="tour.add",
+                    info="Add new tour",
+                ),
+                ConfigurationItem(
+                    name="Settings",
+                    blueprint="tour.config",
+                    info="Extension settings",
+                ),
+            ],
+        )
 
-def collect_config_sections_subs(sender: None):
-    return SectionConfig(
-        name="Tour",
-        configs=[
-            ConfigurationItem(
-                name="List of tours",
-                blueprint="tour.list",
-                info="Manage existing tours",
-            ),
-            ConfigurationItem(
-                name="Add tour",
-                blueprint="tour.add",
-                info="Add new tour",
-            ),
-        ],
-    )
+    @staticmethod
+    def collect_config_schemas_subs(sender: None):
+        return ["ckanext.tour:config_schema.yaml"]

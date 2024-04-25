@@ -23,13 +23,14 @@ def tour_create(
     user_id_or_name_exists,
     one_of,
     ignore,
+    tour_duplicate_anchor
 ) -> Schema:
     step_schema = tour_step_schema()
     step_schema["tour_id"] = [ignore_missing]
 
     return {
         "title": [not_empty, unicode_safe],
-        "anchor": [ignore_missing, unicode_safe],
+        "anchor": [ignore_missing, unicode_safe, tour_duplicate_anchor],
         "page": [ignore_missing, unicode_safe],
         "author_id": [not_empty, user_id_or_name_exists],
         "state": [

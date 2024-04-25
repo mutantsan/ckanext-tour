@@ -3,7 +3,7 @@
 {% block scripts %}
     {{ super() }}
 
-    <span class="hidden" data-module="tour-init"></span>
+    <span class="hidden" data-module="tour-init" data-module-config="{{ h.tour_get_tour_config() }}"></span>
 
     {% asset 'tour/tour-js' %}
 {% endblock %}

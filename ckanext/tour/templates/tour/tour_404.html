@@ -7,11 +7,5 @@
 {% endblock breadcrumb_content %}
 
 {% block ap_content %}
-    <p style="font-size: 70px">TOUR NOT FOUND - 404</p>
+    <p style="font-size: 70px">{{ _("TOUR NOT FOUND - 404") }}</p>
 {% endblock ap_content %}
-
-{% block scripts %}
-    {{ super() }}
-
-    {% asset 'tour/tour-htmx' %}
-{% endblock %}

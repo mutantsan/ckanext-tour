@@ -11,7 +11,6 @@ ckan.module("tour-steps", function ($) {
             this.addStepBtn = $(".add-step");
 
             // add event listeners
-            $(document).on('click', '.add-step', this._afterStepAdded);
             $(document).on('click', '.btn-collapse-steps', this._onCollapseAllSteps);
 
             // HTMX events
@@ -55,10 +54,6 @@ ckan.module("tour-steps", function ($) {
                     });
                 }
             });
-        },
-
-        _afterStepAdded: function (e) {
-            //
         },
 
         /**
@@ -110,7 +105,18 @@ ckan.module("tour-steps", function ($) {
 
         _onCollapseAllSteps: function (e) {
             e.preventDefault();
-            $(".tour-steps__steps .accordion-collapse").collapse("hide");
+
+            if ($('.btn-collapse-steps').attr("collapsed") == 1) {
+                $(".tour-steps__steps .accordion-collapse").collapse("show");
+
+                $('.btn-collapse-steps').text("Collapse all steps");
+                $('.btn-collapse-steps').attr("collapsed", 0);
+            } else {
+                $(".tour-steps__steps .accordion-collapse").collapse("hide");
+
+                $('.btn-collapse-steps').text("Expand all steps");
+                $('.btn-collapse-steps').attr("collapsed", 1);
+            }
         }
     };
 });

@@ -18,7 +18,7 @@ class TourUpdateView(MethodView):
         except tk.ValidationError:
             return tk.render("tour/tour_404.html")
 
-        return tk.render("tour/tour_edit.html", extra_vars={"tour": tour})
+        return tk.render("tour/tour_edit.html", extra_vars={"data": tour, "errors": {}})
 
     def post(self, tour_id: str) -> Response | str:
         try:
@@ -34,7 +34,7 @@ class TourUpdateView(MethodView):
             return tk.render(
                 "tour/tour_edit.html",
                 extra_vars={
-                    "tour": tour,
+                    "data": tour,
                     "errors": e.error_dict,
                     "error_summary": e.error_summary,
                 },
@@ -42,11 +42,11 @@ class TourUpdateView(MethodView):
 
         tk.h.flash_success(tk._("The tour has been updated!"))
 
-        return tk.redirect_to("tour.edit", tour_id=tour_id)
+        return tk.redirect_to("tour.list")
 
     def _build_context(self) -> types.Context:
         return {
-            "user": tk.current_user.name,
+            "user": tk.current_user.name,  # type: ignore
             "auth_user_obj": tk.current_user,
         }
 

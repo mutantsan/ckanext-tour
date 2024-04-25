@@ -1,0 +1,43 @@
+{% import 'macros/form.html' as form %}
+
+{% set collapse_step = h.tour_collapse_steps() %}
+
+<form action="{{ form_action }}" method="POST" enctype="multipart/form-data">
+    {% call form.input("title", label=_("Tour title"), value=data.title, error=errors.title, attrs={'required': 1, 'class': 'form-control'}) %}
+        {{ form.info(_("A tour title to explain what is it for")) }}
+    {% endcall %}
+
+    {% call form.input("anchor", label=_("Query anchor"), value=".breadcrumb .active" or data.anchor, error=errors.anchor) %}
+        {{ form.info(_('An anchor element query that will trigger the tour. Could be a tooltip, button or any HTML element.', classes=['info-help-tight'])) }}
+    {% endcall %}
+
+    {% call form.input("page", label=_("Page anchor"), value=data.page, error=errors.page) %}
+        {{ form.info(_('Optional. A path to a page, where tour will be applied. Note, that a page tour will be triggered automatically.', classes=['info-help-tight'])) }}
+    {% endcall %}
+
+    <div class="form-actions js-form-wrapper form-wrapper">
+        <button class="btn btn-primary" type="submit">{{ _("Update tour") }}</button>
+        <button class="btn btn-black btn-collapse-steps" {% if collapse_step %}collapsed=1{% endif %}>
+            {{ _("Expand all steps") if collapse_step else _("Collapse all steps") }}
+        </button>
+        <button class="add-step btn btn-success" hx-trigger="click" hx-post="{{ h.url_for('tour.add_step') }}"
+            hx-vals='' hx-swap="outerHTML" hx-target=".next-tour">
+            {{ _("Add step") }}
+            <i class="fa fa-plus"></i>
+        </button>
+    </div>
+
+    <h3>{{ _("Tour steps:") }}</h3>
+    <div class="tour-steps" data-module="tour-steps tour-htmx">
+        <div class="tour-steps__steps">
+
+            {% for step in data.steps %}
+                {% set step_errors = errors.steps | default({}) %}
+                {% snippet 'tour/snippets/tour_step.html', step=step, step_index=loop.index, errors=step_errors[loop.index - 1] | default({}), add_next_container=False, collapse_step=collapse_step %}
+            {% else %}
+                {% snippet 'tour/snippets/tour_step.html', step={}, errors={} %}
+            {% endfor %}
+            <div class="next-tour"></div>
+        </div>
+    </div>
+</form>

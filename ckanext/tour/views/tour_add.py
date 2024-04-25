@@ -12,7 +12,7 @@ tour.before_request(ap_before_request)
 
 class TourAddView(MethodView):
     def get(self) -> str:
-        return tk.render("tour/tour_add.html", extra_vars={"data": {}})
+        return tk.render("tour/tour_add.html", extra_vars={"data": {}, "errors": {}})
 
     def post(self) -> Response | str:
         data_dict = self._prepare_payload()
@@ -81,4 +81,6 @@ class TourAddView(MethodView):
 
 class TourAddStepView(MethodView):
     def post(self) -> str:
-        return tk.render("tour/snippets/tour_step.html", extra_vars={"step": {}})
+        return tk.render(
+            "tour/snippets/tour_step.html", extra_vars={"step": {}, "errors": {}}
+        )

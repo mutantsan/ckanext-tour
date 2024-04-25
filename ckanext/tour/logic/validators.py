@@ -55,16 +55,6 @@ def tour_url_validator(
     if not url:
         return
 
-    # step_idx = key[1]
-    # try:
-    #     image_idx = key[3]
-    # except IndexError:
-    #     import ipdb; ipdb.set_trace()
-    #     pass
-
-    # if data.get(('steps', step_idx, 'image', image_idx, 'upload')):
-    #     return
-
     try:
         pieces = urlparse(url)
         if (
@@ -78,3 +68,17 @@ def tour_url_validator(
         pass
 
     errors[key].append(tk._("Please provide a valid URL"))
+
+
+def tour_duplicate_anchor(
+    key: types.FlattenKey,
+    data: types.FlattenDataDict,
+    errors: types.FlattenErrorDict,
+    context: types.Context,
+) -> Any:
+    """Ensures that the tour step with a given anchor doesn't exist"""
+
+    result = tour_model.Tour.get_by_anchor(data[key])
+
+    if result and result.id != data.get(('id',)):
+        raise tk.Invalid(f"The tour step with an anchor `{data[key]}` already exists.")

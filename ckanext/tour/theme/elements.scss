@@ -49,8 +49,8 @@
             margin-right: auto;
 
             .step-number {
-                border: 1px solid $black;
-                color: $black;
+                border: 1px solid var(--ap-color);
+                color: var(--ap-color);
                 padding: 5px 11px;
                 border-radius: 50%;
             }
@@ -126,7 +126,10 @@
                 text-decoration: none;
                 cursor: pointer;
 
-                &.active, &:hover, &:focus, &:active {
+                &.active,
+                &:hover,
+                &:focus,
+                &:active {
                     width: 15px;
                     background: #999;
                 }
@@ -172,5 +175,11 @@
                 }
             }
         }
+    }
+}
+
+body[admin-panel="true"] {
+    .tour-accordion .image-upload #field-image-upload {
+        width: 100px;
     }
 }

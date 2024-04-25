@@ -123,16 +123,6 @@ def tour_update(context, data_dict):
 
     steps: list[dict[str, Any]] = data_dict.pop("steps", [])
 
-    # TODO: how to delete steps?... Probably, with JS, add ID to some field
-    # form_steps: set[str] = {step["id"] for step in steps}
-    # tour_steps: set[str] = {step.id for step in tour.steps}
-
-    # for step_id in tour_steps - form_steps:
-    #     tk.get_action("tour_step_remove")(
-    #         {"ignore_auth": True},
-    #         {"id": step_id},
-    #     )
-
     for step in steps:
         action = "tour_step_update" if step.get("id") else "tour_step_create"
         step["tour_id"] = tour.id
@@ -162,18 +152,19 @@ def tour_step_update(context, data_dict):
         )
     elif data_dict.get("image"):
         data_dict["image"][0]["tour_step_id"] = tour_step.id
-        action = (
-            "tour_step_image_update" if tour_step.image else "tour_step_image_upload"
-        )
 
         try:
-            tk.get_action(action)({"ignore_auth": True}, data_dict["image"][0])
+            tk.get_action(
+                "tour_step_image_update"
+                if tour_step.image
+                else "tour_step_image_upload"
+            )({"ignore_auth": True}, data_dict["image"][0])
         except tk.ValidationError as e:
             raise tk.ValidationError(
                 {"image": [f"Error while uploading step image: {e}"]}
             )
 
-    model.Session.commit()
+    # model.Session.commit()
 
     return tour_step.dictize(context)
 
@@ -204,7 +195,7 @@ def tour_step_image_upload(context, data_dict):
         result = tk.get_action("files_file_create")(
             {"ignore_auth": True},
             {
-                "name": f"Tour step image <{dt.utcnow().isoformat()}>",
+                "name": f"Tour step image <{tour_step_id}>",
                 "upload": data_dict["upload"],
             },
         )
@@ -239,7 +230,7 @@ def tour_step_image_update(context, data_dict):
         result = tk.get_action("files_file_create")(
             {"ignore_auth": True},
             {
-                "id": tour_step_image.file_id,
+                "name": f"Tour step image <{data_dict['tour_step_id']}>",
                 "upload": data_dict["upload"],
             },
         )

@@ -47,8 +47,6 @@ this.ckan.module('tour-image-upload', function ($) {
 
             // this is the location for the upload/link data/image label
             this.label_location = this.scope.find('label[for="field-image-url"]');
-            // determines if the resource is a data resource
-            this.is_data_resource = (this.options.field_url === 'url') && (this.options.field_upload === 'upload');
             this.previousUpload = this.options.previous_upload;
 
             // Is there a clear checkbox on the form already?
@@ -81,8 +79,8 @@ this.ckan.module('tour-image-upload', function ($) {
             }
 
             // Button for resetting the form when there is a URL set
-            var removeText = this._('Remove');
-            $('<a href="javascript:;" class="btn btn-danger btn-remove-url">'
+            var removeText = this._('Clear');
+            $('<a class="btn btn-danger btn-remove-url">'
                 + removeText + '</a>')
                 .prop('title', removeText)
                 .on('click', this._onRemove)
@@ -97,7 +95,6 @@ this.ckan.module('tour-image-upload', function ($) {
                 .on('mouseout', this._onInputMouseOut)
                 .on('change', this._onInputChange)
                 .prop('title', this._('Upload a file on your computer'))
-                .css('width', this.button_upload.outerWidth());
 
             // Fields storage. Used in this.changeState
             this.fields = $('<i />')
@@ -108,8 +105,7 @@ this.ckan.module('tour-image-upload', function ($) {
                 .add(this.field_image);
 
             // Disables autoName if user modifies name field
-            this.field_name
-                .on('change', this._onModifyName);
+            this.field_name.on('change', this._onModifyName);
             // Disables autoName if resource name already has value,
             // i.e. we on edit page
             if (this.field_name.val()) {
@@ -118,57 +114,14 @@ this.ckan.module('tour-image-upload', function ($) {
 
             if (options.is_url) {
                 this._showOnlyFieldUrl();
-
-                this._updateUrlLabel(this._('URL'));
             } else if (options.is_upload) {
                 this._showOnlyFieldUrl();
 
                 this.field_url_input.prop('readonly', true);
                 this.field_url_input.val(this.field_url_input.val());
-
-                this._updateUrlLabel(this._('File'));
             } else {
                 this._showOnlyButtons();
             }
-        },
-
-        /* Quick way of getting just the filename from the uri of the resource data
-         *
-         * url - The url of the uploaded data file
-         *
-         * Returns String.
-         */
-        _fileNameFromUpload: function (url) {
-            // If it's a local CKAN image return the entire URL.
-            if (/^\/base\/images/.test(url)) {
-                return url;
-            }
-
-            // remove fragment (#)
-            url = url.substring(0, (url.indexOf("#") === -1) ? url.length : url.indexOf("#"));
-            // remove query string
-            url = url.substring(0, (url.indexOf("?") === -1) ? url.length : url.indexOf("?"));
-            // extract the filename
-            url = url.substring(url.lastIndexOf("/") + 1, url.length);
-
-            return url; // filename
-        },
-
-        /* Update the `this.label_location` text
-         *
-         * If the upload/link is for a data resource, rather than an image,
-         * the text for label[for="field-image-url"] will be updated.
-         *
-         * label_text - The text for the label of an uploaded/linked resource
-         *
-         * Returns nothing.
-         */
-        _updateUrlLabel: function (label_text) {
-            if (!this.is_data_resource) {
-                return;
-            }
-
-            this.label_location.text(label_text);
         },
 
         /* Event listener for when someone sets the field to URL mode
@@ -184,8 +137,6 @@ this.ckan.module('tour-image-upload', function ($) {
             if (this.options.is_upload) {
                 this.field_clear.val('true');
             }
-
-            this._updateUrlLabel(this._('URL'));
         },
 
         /* Event listener for resetting the field back to the blank state
@@ -225,8 +176,6 @@ this.ckan.module('tour-image-upload', function ($) {
             this._showOnlyFieldUrl();
 
             this._autoName(file_name);
-
-            this._updateUrlLabel(this._('File'));
         },
 
         /* Show only the buttons, hiding all others

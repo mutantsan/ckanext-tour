@@ -42,7 +42,7 @@ class TourFactory(factories.CKANFactory):
 
     id = factory.Faker("uuid4")
     title = factory.Faker("sentence")
-    anchor = "#tour-tooltip"
+    anchor = factory.Faker("sentence")
     page = "/dataset"
     author_id = factory.LazyFunction(lambda: factories.User()["id"])  # type: ignore
     steps = factory.LazyAttribute(
