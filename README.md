@@ -22,6 +22,19 @@ Each step contains next information:
 - Position: Specifies the placement of step card (top, right, bottom, left).
 - Image: Visuals to complement the text, illustrate points, or add visual interest. GIF animation could be used here.
 
+### Create Tour
+
+To create a tour for ckanext-tour via the admin panel UI, follow these steps:
+
+- Log in to your CKAN instance as a sysadmin.
+- Navigate to the `Configuration` section in the admin panel toolbar.
+- Find and click the `Add tour` link under the `Tour` section to open the tour creation form.
+- Fill in the required information for the tour.
+  - You can add 1 or more steps for each tour.
+- Once you have added all the information, press `Create tour` button to submit the form and save the tour.
+- Now you can go to the `List of tours` page and see all the tours that were created.
+
+
 ## Requirements
 
 Compatibility with core CKAN versions:
