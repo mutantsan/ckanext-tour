@@ -16,7 +16,7 @@
     {% endcall %}
 
     <div class="form-actions js-form-wrapper form-wrapper">
-        <button class="btn btn-primary" type="submit">{{ _("Update tour") }}</button>
+        <button class="btn btn-primary" type="submit">{{ _("Create tour") if is_create else _("Update tour") }}</button>
         <button class="btn btn-black btn-collapse-steps" {% if collapse_step %}collapsed=1{% endif %}>
             {{ _("Expand all steps") if collapse_step else _("Collapse all steps") }}
         </button>

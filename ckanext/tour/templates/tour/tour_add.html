@@ -8,7 +8,7 @@
 {% endblock breadcrumb_content %}
 
 {% block ap_content %}
-    {% snippet 'tour/snippets/tour_form.html', data=data, errors=errors, form_action=h.url_for('tour.add') %}
+    {% snippet 'tour/snippets/tour_form.html', data=data, errors=errors, form_action=h.url_for('tour.add'), is_create=True %}
 {% endblock ap_content %}
 
 {% block scripts %}
