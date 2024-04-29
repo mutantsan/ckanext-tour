@@ -21,7 +21,8 @@ this.ckan.module('tour-init', function (jQuery) {
 
             $.ajax({
                 url: this.sandbox.url("/api/action/tour_list"),
-                success: this._onSuccessRequest
+                cache: false,
+                success: this._onSuccessRequest,
             });
         },
 
