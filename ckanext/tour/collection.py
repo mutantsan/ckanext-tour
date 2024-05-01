@@ -46,6 +46,7 @@ class TourListCollection(ApCollection):
             "author_id",
             "row_actions",
         ],
+        width={"bulk-action": "3%"},
         sortable={"created_at", "modified_at"},
         searchable={"title", "page"},
         labels={
@@ -68,7 +69,6 @@ class TourListCollection(ApCollection):
             "author_id": "Author",
             "row_actions": "Actions",
         },
-        width={},
         serializers={
             "created_at": [("date", {})],
             "modified_at": [("date", {})],

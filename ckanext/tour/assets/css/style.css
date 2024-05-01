@@ -81,6 +81,7 @@
 .shepherd-element.tour-step .shepherd-content .shepherd-text img {
   max-width: 100%;
   height: auto;
+  width: -webkit-fill-available;
 }
 .shepherd-element.tour-step .shepherd-content .shepherd-stats {
   text-align: center;
